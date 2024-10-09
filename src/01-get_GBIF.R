@@ -4,17 +4,14 @@ library(rgbif)    # for querying GBIF records
 library(here)     # for creating relative file-paths
 library(sf)       # for manipulating geospatial files
 library(wk)       # for manipulating WTK polygons - needed for GBIF queries
-library(opendatatoronto) # for importing open data through API
 library(dplyr)
+library(CoordinateCleaner)
 
 # import -----------------------------------------------------------------------
 
 # load green space dataset from City of Toronto 
 # this is done to query the GBIF occurrence records using a polygon
-package <- show_package("9a284a84-b9ff-484b-9e30-82f22c1780b9")
-resources <- list_package_resources("9a284a84-b9ff-484b-9e30-82f22c1780b9")
-datastore_resources <- dplyr::filter(resources, tolower(format) %in% c('csv', 'geojson'))
-ugs <- dplyr::filter(datastore_resources, row_number()==4) %>% get_resource()
+ugs <- sf::read_sf(here("data", "input_data", "green_spaces_4326"))
 
 # clean data -------------------------------------------------------------------
 
@@ -72,7 +69,7 @@ keys_id <- name_backbone_checklist(
   "Aegopodium podagraria",
   "Chelidonium majus",
   "Leonurus cardiaca")
-)
+) 
 
 # create WTK polygon of the City of Toronto boundary
 # this polygon should reduce the number of imported queries from GBIF
@@ -107,6 +104,46 @@ to_occ <- occ_download_get(
       "year", 
       "decimalLatitude", 
       "decimalLongitude",
+      "coordinateUncertaintyInMeters",
       "species", 
       "acceptedScientificName")
       )
+
+# more filters
+to_occ_clean <- to_occ %>%
+  
+  # remove geodefault values
+  dplyr::filter(!coordinateUncertaintyInMeters %in% c(301,3036,999,9999)) %>%
+  
+  # remove values with very high coordinate uncertainty
+  dplyr::filter(coordinateUncertaintyInMeters < 1000 | is.na(coordinateUncertaintyInMeters))
+
+# sanity checks
+
+# note: I ran two tests to determine bias in coordinate conversion 
+# and rasterized sampling on October, 9th, 2024. 
+# Both tests show no deviations from tested assumptions, and thus
+# zero flagged records within datasets of a particular invasive plant 
+
+# I have kept code below, mainly for transparency but 
+# other readers can easily reproduce the code (if need be)
+
+## coordinate conversion bias
+#out.ddmm <- to_occ_clean %>%
+#    dplyr::filter(!is.na(decimalLatitude) & !is.na(decimalLongitude)) %>%
+#    cd_ddmm(lon = "decimalLongitude", lat = "decimalLatitude", 
+#        ds = "species", diff = 1, min_span = 0.1,
+#        value = "dataset")
+
+## rasterized sampling bias
+#out.round <- to_occ_clean %>%
+#  dplyr::filter(!is.na(decimalLatitude) & !is.na(decimalLongitude)) %>%
+#  cd_round(
+#  lon = "decimalLongitude", 
+#  lat = "decimalLatitude", 
+#  ds = "species",
+#  value = "dataset",
+#  T1 = 7,
+#  verbose = TRUE,
+#  graphs = F)
+
