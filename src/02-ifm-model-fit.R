@@ -6,6 +6,7 @@ library(here)
 library(sf)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 
 # prep -------------------------------------------------------------------------
 
@@ -18,10 +19,12 @@ occ_tidy <- read.csv(here("data", "intermediate_data", "occ_tidy.csv"))
 
 # clean data -------------------------------------------------------------------
 
-# get overlapping polygons with the candidate 2km buffer
+## calculate patch occupancy ---------------------------------------------------
+
+# get overlapping polygons within 2km buffer
 out_overlap <- ugs_inext[st_intersects(ugs_inext, buffer, sparse = FALSE), ]
 
-# get garlic mustard GBIF records
+# get GBIF records for DSV from 2016-2024
 dsv_gbif <- occ_tidy %>%
   dplyr::filter(species == "Vincetoxicum rossicum") %>%
   dplyr::filter(!is.na(decimalLatitude) & !is.na(decimalLongitude)) %>%
@@ -29,53 +32,86 @@ dsv_gbif <- occ_tidy %>%
   st_set_crs(4326) %>%
   st_transform(crs = 32617)
 
-dsv_sites <- out_overlap %>%
-  sf::st_join(dsv_gbif) %>%
+# get occupied polygons 
+dsv_occ <- out_overlap %>%
+  sf::st_join(dsv_gbif, join = st_intersects, left = TRUE) %>%
   mutate(
     occurrenceStatus = case_when(
       occurrenceStatus == "PRESENT" ~ "1", 
       is.na(occurrenceStatus) ~ "0", 
       TRUE ~ occurrenceStatus
-    ) %>% as.numeric()
+    ) %>% as.numeric(),
   ) %>%
-  group_by(id) %>%
-  summarize(occ_recs = sum(occurrenceStatus)) %>%
-  ungroup()
+  dplyr::filter(!is.na(year)) %>%
+  group_by(id, geometry) %>%
+  tidyr::pivot_wider(values_from = occurrenceStatus, names_from = year) %>%
+  ungroup() %>%
+  mutate(across(`2023`:`2024`, ~tidyr::replace_na(., 0))) %>%
+  select(
+    id, 
+    yr_2018 = `2018`, 
+    yr_2019 = `2019`, 
+    yr_2020 = `2020`, 
+    yr_2021 = `2021`,
+    yr_2022 = `2022`, 
+    yr_2023 = `2023`, 
+    yr_2024 = `2024`
+  ) 
+  
+# get unoccupied polygons 
+dsv_unocc <- out_overlap %>%
+  sf::st_join(dsv_gbif, join = st_intersects, left = TRUE) %>%
+  filter(is.na(year)) %>%
+  mutate(
+    yr_2018 = 0,
+    yr_2019 = 0, 
+    yr_2020 = 0, 
+    yr_2021 = 0, 
+    yr_2022 = 0, 
+    yr_2023 = 0,
+    yr_2024 = 0
+  ) %>%
+  select(colnames(dsv_occ))
 
-# load data
-#survey <- read.csv(here("data", "intermediate_data", "occ_tidy.csv"))
-#survey <- survey[1:30, ]
-# create a matrix to hold parameters x, y, and u
-#params <- matrix(0, nrow = 10, ncol=4)
+dsv <- rbind(dsv_occ, dsv_unocc) %>%
+  group_by(id) %>%
+  summarize(across(yr_2018:yr_2024, ~ifelse(sum(.) >=1, 1, 0)))
+
+## calculate patch area ---------------------------------------------------------
+
+dsv <- dsv %>%
+  mutate(
+    area_m2 = st_area(geometry),
+    area_m2 = as.numeric(area_m2)
+    ) 
 
 # assign variables -------------------------------------------------------------
 
-# get calculated patch sizes
-area <- survey$area_km2 
+# create a matrix to hold parameters x, y, and u
+params <- matrix(0, nrow = 10, ncol = 4)
 
-# get latitude coordinates of a given patch
-x_crd <- survey$x_crds 
-
-# get longitude coordinates of a given patch 
-y_crd <- survey$y_crds
+# get patch area
+area <- dsv$area_m2
 
 # estimate strength of the distance decay from empirical dispersal kernels
-# using m
-alpha <- 70
+# so far, maximum dispersal distance for Vincetoxicum rossicum
+alpha <- 20
 
 # calculate interpatch distances as the minimum edge-edge distance between 
 # each patch and the nearest patch 
 # gDistance using rgeos is now out of service, plus terra R package
 # uses different class objects than sf, so this sf solution should work 
-lines <- st_cast(dsv_sites, "MULTILINESTRING")
-dist_matrix <- st_distance(lines, which = "Euclidean")
+dist_matrix <- st_distance(
+  st_cast(dsv, "MULTILINESTRING"), 
+  which = "Euclidean"
+  )
 
 # calculate connectivity -------------------------------------------------------
 
 # for IFM, connectivity (S) is the sum of each patch
 # where the migration of each patch is the product of patch size, occupancy, 
 # and interpatch distance (weighted by dispersal distance) 
-edis <- as.matrix(exp(-alpha*d))
+edis <- as.matrix(exp(-(1/alpha)*as.dist(dist_matrix)))
 diag(edis) <- 0
 edis <- sweep(edis, 2, area, "*")
 
