@@ -82,7 +82,8 @@ dsv <- rbind(dsv_occ, dsv_unocc) %>%
 dsv <- dsv %>%
   mutate(
     area_m2 = st_area(geometry),
-    area_m2 = as.numeric(area_m2)
+    area_m2 = as.numeric(area_m2),
+    area_km2 = area_m2/1000000
     ) 
 
 # assign variables -------------------------------------------------------------
@@ -91,11 +92,11 @@ dsv <- dsv %>%
 params <- matrix(0, nrow = 10, ncol = 4)
 
 # get patch area
-area <- dsv$area_m2
+A <- dsv$area_km2
 
 # estimate strength of the distance decay from empirical dispersal kernels
 # so far, maximum dispersal distance for Vincetoxicum rossicum
-alpha <- 20
+alpha <- 70
 
 # calculate interpatch distances as the minimum edge-edge distance between 
 # each patch and the nearest patch 
@@ -112,35 +113,48 @@ dist_matrix <- st_distance(
 # where the migration of each patch is the product of patch size, occupancy, 
 # and interpatch distance (weighted by dispersal distance) 
 edis <- as.matrix(exp(-(1/alpha)*as.dist(dist_matrix)))
-diag(edis) <- 0
-edis <- sweep(edis, 2, area, "*")
+edis <- sweep(edis, 2, A, "*")
 
 # this is for a single snapshot of occupancies 
 # but could include multiple surveys from GBIF?
-p <- survey[,5:(no.survey+4)]
+p <- st_drop_geometry(dsv[, c("yr_2018", "yr_2019", "yr_2020", "yr_2021", "yr_2022", "yr_2023", "yr_2024")])
 P <- rowSums(p)
-S <- rowSums(edis[, p > 0])
+S <- rowSums(sweep(edis, 2, P/ncol(p), "*"))
 
 # estimate parameters ----------------------------------------------------------
 
 # run logistic regression 
 # incidence function model can be parameterized as a linear model of 
 # log-odds incidence
-mod <- glm(P ~ offset(2*log(S)) + log(A), family = binomial(link = "logit"))
+mod <- glm(cbind(P, ncol(p) - P) ~ offset(2*log(S)) + log(A), family = binomial(link = "logit"))
 
 # estimate parameters x 
 # x represents the extent to which a species’ survival is dependent on patch
 # size (larger x represents weaker dependence)
 beta <- coef(mod)
-x <- beta[2]
+xhat <- beta[2]
 
 # estimate parameters y and u from log(uy)
-# assume that the smallest plot where the
 # species was present is of the size where extinction probability E = 1
-A0 <- min(A[P>0])
 ey <- exp(-beta[1])
-e <- A0^x
-y <- sqrt(ey/e) 
+etilde <- min(A[P>0])^xhat
+ytilde <- ey/etilde
 
 # summarize parameters ---------------------------------------------------------
 params <- data.frame(x = x, e = e, y = y) 
+
+# plot -------------------------------------------------------------------------
+
+site_selection <- ggplot() + 
+  geom_sf(data = st_intersection(dsv_gbif, out_overlap)) + 
+  geom_sf(alpha = 0.1, data = out_overlap) + 
+  theme_bw()
+
+ggsave(
+  plot = site_selection, 
+  filename = here("site_select.png"),
+  device = "png", 
+  units = "in", 
+  height = 5, 
+  width = 5
+)
