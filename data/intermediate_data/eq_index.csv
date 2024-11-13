@@ -1,0 +1,141 @@
+"","rank","neighbourhood_number_and_name","score"
+"1",1,"24 Black Creek",21.38
+"2",2,"25 Glenfield-Jane Heights",24.39
+"3",3,"115 Mount Dennis",26.39
+"4",4,"112 Beechborough-Greenbrook",26.54
+"5",5,"121 Oakridge",28.57
+"6",6,"2 Mount Olive-Silverstone-Jamestown",29.29
+"7",7,"5 Elms-Old Rexdale",29.54
+"8",8,"72 Regent Park",29.81
+"9",9,"55 Thorncliffe Park",33.09
+"10",10,"85 South Parkdale",33.1
+"11",11,"61 Crescent Town",33.21
+"12",12,"111 Rockcliffe-Smythe",33.86
+"13",13,"139 Scarborough Village",33.94
+"14",14,"21 Humber Summit",34.3
+"15",15,"28 Rustic",35.4
+"16",16,"125 Ionview",35.73
+"17",17,"44 Flemingdon Park",35.81
+"18",18,"113 Weston",35.99
+"19",19,"22 Humbermede",36.09
+"20",20,"138 Eglinton East",36.28
+"21",21,"135 Morningside",36.89
+"22",22,"26 Downsview-Roding-CFB",37.16
+"23",23,"136 West Hill",37.25
+"24",24,"27 York University Heights",37.66
+"25",25,"137 Woburn",39.01
+"26",26,"3 Thistletown-Beaumond Heights",39.78
+"27",27,"110 Keelesdale-Eglinton West",40.14
+"28",28,"43 Victoria Village",40.39
+"29",29,"91 Weston-Pellam Park",40.47
+"30",30,"6 Kingsview Village-The Westway",41.76
+"31",31,"124 Kennedy Park",42.38
+"32",32,"30 Brookhaven-Amesbury",43.07
+"33",33,"4 Rexdale-Kipling",43.76
+"34",34,"132 Malvern",43.89
+"35",35,"109 Caledonia-Fairbank",44.65
+"36",36,"126 Dorset Park",45.12
+"37",37,"1 West Humber-Clairville",45.78
+"38",38,"35 Westminster-Branson",46.57
+"39",39,"74 North St. James Town",47.55
+"40",40,"127 Bendale",47.72
+"41",41,"120 Clairlea-Birchmount",48.34
+"42",42,"54 O'Connor-Parkview",48.67
+"43",43,"131 Rouge",48.81
+"44",44,"119 Wexford-Maryvale",49.47
+"45",45,"31 Yorkdale-Glen Park",49.53
+"46",46,"73 Moss Park",50.11
+"47",47,"78 Kensington-Chinatown",50.7
+"48",48,"29 Maple Leaf",50.72
+"49",49,"117 L'Amoreaux",50.78
+"50",50,"13 Etobicoke West Mall",51.19
+"51",51,"116 Steeles",51.66
+"52",52,"53 Henry Farm",51.87
+"53",53,"65 Greenwood-Coxwell",52.13
+"54",54,"18 New Toronto",53.21
+"55",55,"128 Agincourt South-Malvern West",53.43
+"56",56,"57 Broadview North",53.69
+"57",57,"45 Parkwoods-Donalda",53.79
+"58",58,"23 Pelmo Park-Humberlea",53.79
+"59",59,"92 Corso Italia-Davenport",54.03
+"60",60,"7 Willowridge-Martingrove-Richview",54.46
+"61",61,"129 Agincourt North",54.67
+"62",62,"118 Tam O'Shanter-Sullivan",55.14
+"63",63,"123 Cliffcrest",55.95
+"64",64,"32 Englemount-Lawrence",56.01
+"65",65,"36 Newtonbrook West",56.07
+"66",66,"8 Humber Heights-Westmount",56.13
+"67",67,"19 Long Branch",56.26
+"68",68,"130 Milliken",56.85
+"69",69,"93 Dovercourt-Wallace Emerson-Junction",57.09
+"70",70,"107 Oakwood Village",57.33
+"71",71,"108 Briar Hill-Belgravia",57.81
+"72",72,"69 Blake-Jones",58.07
+"73",73,"34 Bathurst Manor",58.41
+"74",74,"134 Highland Creek",58.77
+"75",75,"60 Woodbine-Lumsden",59.08
+"76",76,"70 South Riverdale",59.94
+"77",77,"84 Little Portugal",60.04
+"78",78,"81 Trinity-Bellwoods",60.09
+"79",79,"122 Birchcliffe-Cliffside",60.28
+"80",80,"47 Don Valley Village",60.52
+"81",81,"17 Mimico",62.36
+"82",82,"49 Bayview Woods-Steeles",62.37
+"83",83,"14 Islington-City Centre West",62.51
+"84",84,"11 Eringate-Centennial-West Deane",62.56
+"85",85,"9 Edenbridge-Humber Valley",63.36
+"86",86,"20 Alderwood",63.88
+"87",87,"90 Junction Area",64.27
+"88",88,"86 Roncesvalles",64.95
+"89",89,"50 Newtonbrook East",65.18
+"90",90,"94 Wychwood",65.46
+"91",91,"58 Old East York",65.61
+"92",92,"46 Pleasant View",65.72
+"93",93,"62 East End-Danforth",65.82
+"94",94,"48 Hillcrest Village",65.84
+"95",95,"140 Guildwood",66.19
+"96",96,"114 Lambton Baby Point",66.36
+"97",97,"83 Dufferin Grove",66.79
+"98",98,"59 Danforth East York",66.94
+"99",99,"37 Willowdale West",67.04
+"100",100,"66 Danforth",67.56
+"101",101,"75 Church-Yonge Corridor",67.92
+"102",102,"64 Woodbine Corridor",68.11
+"103",103,"16 Stonegate-Queensway",69.29
+"104",104,"33 Clanton Park",69.53
+"105",105,"51 Willowdale East",69.67
+"106",106,"133 Centennial Scarborough",70.75
+"107",107,"52 Bayview Village",71.65
+"108",108,"80 Palmerston-Little Italy",72.19
+"109",109,"82 Niagara",72.54
+"110",110,"42 Banbury-Don Mills",73.19
+"111",111,"106 Humewood-Cedarvale",73.94
+"112",112,"71 Cabbagetown-South St. James Town",74.42
+"113",113,"12 Markland Wood",74.88
+"114",114,"102 Forest Hill North",74.94
+"115",115,"79 University",75.07
+"116",116,"38 Lansing-Westgate",76.15
+"117",117,"67 Playter Estates-Danforth",76.16
+"118",118,"104 Mount Pleasant West",76.39
+"119",119,"10 Princess-Rosethorn",76.57
+"120",120,"76 Bay Street Corridor",77.07
+"121",121,"87 High Park-Swansea",77.14
+"122",122,"40 St. Andrew-Windfields",77.43
+"123",123,"95 Annex",78.6
+"124",124,"88 High Park North",80.58
+"125",125,"97 Yonge-St. Clair",80.99
+"126",126,"77 Waterfront Communities-The Island",80.99
+"127",127,"68 North Riverdale",81.21
+"128",128,"39 Bedford Park-Nortown",81.55
+"129",129,"96 Casa Loma",82.31
+"130",130,"63 The Beaches",82.62
+"131",131,"41 Bridle Path-Sunnybrook-York Mills",83.04
+"132",132,"98 Rosedale-Moore Park",83.78
+"133",133,"56 Leaside-Bennington",85.82
+"134",134,"89 Runnymede-Bloor West Village",85.85
+"135",135,"99 Mount Pleasant East",86.04
+"136",136,"15 Kingsway South",86.19
+"137",137,"101 Forest Hill South",86.24
+"138",138,"100 Yonge-Eglinton",88.11
+"139",139,"103 Lawrence Park South",90.12
+"140",140,"105 Lawrence Park North",92.05
