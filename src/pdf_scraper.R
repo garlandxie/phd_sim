@@ -21,16 +21,21 @@ pdf <- here(
 
 # this is a bit slow to run, but faster than manually entering data in Excel
 pdf_tables <- extract_tables(url) 
-eq_index_df <- pdf_tables[[5]]
+
+eq_index1 <- pdf_tables[[5]]
+eq_index2 <- pdf_tables[[6]]
+eq_index3 <- pdf_tables[[7]]
+eq_index4 <- pdf_tables[[8]]
 
 # verify if the column names of the equity index df are correct
-# because the indexing on line 21 might give you the wrong table
+# because the indexing on lines 25-28 might give you the wrong table
 # i.e., Rank, Neighbourhood Number Name, and Score as column names
 # if not, double-check the code and pdf!
 
 # clean ----
 
-eq_index_tidy <- eq_index_df %>%
+eq_index_tidy <- eq_index1 %>%
+  rbind(eq_index2, eq_index3, eq_index4) %>%
   janitor::clean_names() %>%
   as.data.frame() 
 
