@@ -9,7 +9,7 @@ library(stringr)
 
 # import ----
 
-## raster stack of parkland priority 
+## parkland priority map (raster) ----
 r <- stack(here(
   "data", 
   "input_data", 
@@ -34,6 +34,12 @@ tm <- show_package("bb408f36-6824-4158-8a12-d4efe6465959") %>%
   list_package_resources() %>%
   dplyr::filter(name == "Parking Lot WGS84") %>%
   get_resource() 
+
+## existing green spaces ----
+ugs <- show_package("9a284a84-b9ff-484b-9e30-82f22c1780b9") %>%
+  list_package_resources() %>%
+  dplyr::filter(name == "Green Spaces - 4326.zip") %>%
+  get_resource()
 
 ## neighbourhood equity index ----
 
@@ -174,7 +180,86 @@ missing_polys2 <- dplyr::inner_join(
 # parkland priority zones 
 pl_final <- rbind(tm_zn_orange, missing_polys2) 
 
+# eda ----
+
+## clean data ----
+# get consistent coordinate systems
+nei_utm <- sf::st_transform(nei_polygons, 32617)
+ugs_utm <- sf::st_transform(ugs, 32617)
+pls_utm <- sf::st_transform(pl_final, 32617) 
+
+## calculate counts ----
+nei_utm$num_ex_ugs <- unlist(lapply(st_intersects(nei_utm, ugs_utm), length))
+nei_utm$num_pl <- unlist(lapply(st_intersects(nei_utm, pls_utm), length))
+
+## calculate area ----
+area_pl <- pls_utm %>%
+  mutate(area_m2 = st_area(geometry) %>% as.numeric()) %>%
+  st_intersection(nei_utm) %>%
+  group_by(neighbourhood) %>%
+  summarize(
+    total_area = sum(area_m2, na.rm = TRUE),
+    avg_area = mean(area_m2, na.rm = TRUE)) %>%
+  st_drop_geometry()
+
+nei <- left_join(nei_utm, area_pl, by = "neighbourhood") %>%
+  mutate(
+    area_nb = st_area(geometry) %>% as.numeric(),
+    perc_area = (total_area/area_nb)*100
+    )
   
+## visualize ----
+(eq_vs_pl_w_zeros <- nei_utm %>%
+  ggplot(aes(x = factor(classification), y = log(num_pl))) + 
+ geom_boxplot() + 
+ labs(
+    x = "Neighbourhood equity index",
+    y = "Number of existing parking lots \n (within each neighbourhood)"
+    ) + 
+  theme_bw()
+)
+
+(eq_vs_pl_wo_zeros <- nei_utm %>%
+  dplyr::filter(num_pl > 0) %>%
+  ggplot(aes(x = score, y = num_pl)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  labs(
+    x = "Neighbourhood equity index",
+    y = "Number of existing parking lots \n (within each neighbourhood)"
+  ) + 
+  theme_bw()
+)
+
+nei %>%
+  ggplot(aes(x = score, y = perc_area)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    x = "Neighbourhood equity index",
+    y = "Percent area of existing parking lots \n (within each neighbourhood)"
+  )
+
+nei %>%
+  ggplot(aes(x = score, y = total_area)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  labs(
+    x = "Neighbourhood equity index",
+    y = "Total area of existing parking lots \n (within each neighbourhood)"
+  ) + 
+  theme_bw()
+
+nei %>%
+  ggplot(aes(x = score, y = avg_area)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = TRUE) + 
+  labs(
+    x = "Neighbourhood equity index",
+    y = "Average area of existing parking lots \n (within each neighbourhood)"
+  ) + 
+  theme_bw()
+
 # save to disk -----
 
 sf::st_write(
