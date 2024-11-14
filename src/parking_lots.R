@@ -5,6 +5,7 @@ library(sf)
 library(raster)
 library(here)
 library(exactextractr)
+library(stringr)
 
 # import ----
 
@@ -33,6 +34,17 @@ tm <- show_package("bb408f36-6824-4158-8a12-d4efe6465959") %>%
   list_package_resources() %>%
   dplyr::filter(name == "Parking Lot WGS84") %>%
   get_resource() 
+
+## neighbourhood equity index ----
+
+# shape-files for each of the 140 historical neighbourhoods
+nbs <- show_package("neighbourhoods") %>%
+  list_package_resources() %>%
+  dplyr::filter(name == "Neighbourhoods - historical 140 - 4326.zip") %>%
+  get_resource() 
+
+# neighbourhood equity scores for each of the 140 neighbourhoods
+nei_scores <- read.csv(here("data", "intermediate_data", "eq_index.csv"))
 
 # clean data ----
 
@@ -80,6 +92,38 @@ tm_utm <- tm %>%
 #tm_tidy <- rbind(tm_gp, tm_pl) %>% 
 #  distinct(objectid, .keep_all = TRUE)
 
+## neighbourhood equity index -----
+
+# get the neighbourhoods numbers as separate column for each dataset
+# since I think that's the easiest way to get a index 
+# for joining tables 
+
+nbs_tidy <- nbs %>%
+  mutate(
+    neighbourhood_num = str_split(AREA_NA7, pattern = " ") %>% 
+      sapply(tail, n = 1L) %>%
+      str_replace(pattern = "\\(", replacement = "") %>%
+      str_replace(pattern = "\\)", replacement = "")
+    ) %>%
+  dplyr::select(
+    neighbourhood_num, 
+    neighbourhood = AREA_NA7, 
+    classification = CLASSIF9, 
+    geometry
+  ) 
+
+nei_tidy <- nei_scores %>%
+  mutate(
+    neighbourhood_num = str_split(
+      neighbourhood_number_and_name, pattern = " ") %>% 
+      sapply(head, n = 1L)
+  ) %>%
+  dplyr::select(neighbourhood_num, score) 
+
+nei_polygons <- nbs_tidy %>%
+  inner_join(nei_tidy, by = "neighbourhood_num") %>%
+  dplyr::select(neighbourhood, classification, score, geometry)
+
 ## zonal statistics ----
 zn <- exactextractr::exact_extract(r, tm_utm, "majority")
 colnames(zn) <- c("band1_red", "band2_green", "band3_blue")
@@ -91,7 +135,7 @@ tm_zn_orange <- tm_zn %>%
   
   dplyr::filter(
     
-    # then remove grey-ish values 
+    # remove grey-ish values 
     !(band1_red     > 70 &
         band2_green > 70 &
         band3_blue  > 70
@@ -126,8 +170,26 @@ missing_polys2 <- dplyr::inner_join(
   by = c("objectid" = "id")
 )
 
+# join parking lot polygons datasets, where both are within
+# parkland priority zones 
+pl_final <- rbind(tm_zn_orange, missing_polys2) 
+
+  
+# save to disk -----
+
+sf::st_write(
+  obj = nei_polygons,
+  dsn = here("data", "intermediate_data", "nei_scores.shp")
+)
+
+sf::st_write(
+  obj = pl_final,
+  dsn = here("data", "intermediate_data", "parking-lots-in-parkland-priority.shp")
+)
+
 sf::st_write(
   obj = missing_polys2,
   dsn = here("data", "input_data", "parkland_priority", "missing_polygons.shp")
-  )
+)
+
 
