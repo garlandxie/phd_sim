@@ -38,3 +38,9 @@ tin_elev <- show_package("4ab91af6-6b08-4318-aee0-87f163891e53") %>%
   dplyr::filter(row_number()==1) %>%
   list_package_resources() %>%
   get_resource()
+
+# could also import shapefile from disk if the above code doesn't work
+#sf::st_read(here(
+#  "data", "input_data", "resist_surf", "to_tin_elev_2023", 
+#  "2023_TIN.shp")
+#  )
