@@ -30,11 +30,11 @@ lc_2018 <- raster(
 # Slope: Rate of change of elevation at a surface location in degrees
 # Ptg_Slope: Rate of change of elevation at surface location as percentage
 
+# datum:
+# Horizontal: NAD83 (CSRS) / MTM zone 10 (EPSG:2952)
+# Vertical: CGVD2013
+
 tin_elev <- show_package("4ab91af6-6b08-4318-aee0-87f163891e53") %>%
   dplyr::filter(row_number()==1) %>%
   list_package_resources() %>%
   get_resource()
-
-
-
-
