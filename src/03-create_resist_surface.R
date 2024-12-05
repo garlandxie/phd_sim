@@ -45,6 +45,63 @@ tin_elev <- show_package("4ab91af6-6b08-4318-aee0-87f163891e53") %>%
 #  "2023_TIN.shp")
 #  )
 
+## precipitation (rain gauge locations) ----
+rain_gauges <- search_packages("precipitation") %>%
+  dplyr::filter(row_number()==1) %>%
+  list_package_resources() %>%
+  dplyr::filter(format == "CSV") 
+
+rain_gauge_2015 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2015")
+  )
+
+rain_gauge_2016 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2016")
+)
+
+rain_gauge_2017 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2017")
+)
+
+rain_gauge_2018 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2018")
+)
+
+rain_gauge_2019 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2019")
+)
+
+rain_gauge_2020 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2020")
+)
+
+rain_gauge_2021 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2021")
+)
+
+rain_gauge_2022 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2022")
+)
+
+rain_gauge_2023 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2023")
+)
+
+rain_gauge_2024 <- get_resource(
+  dplyr::filter(rain_gauges, name == "precipitation-data-2024")
+)
+
+rain_gauge_10yr <- rain_gauge_2015 %>%
+  rbind(rain_gauge_2016) %>%
+  rbind(rain_gauge_2017) %>%
+  rbind(rain_gauge_2018) %>%
+  rbind(rain_gauge_2019) %>%
+  rbind(rain_gauge_2020) %>%
+  rbind(rain_gauge_2021) %>%
+  rbind(rain_gauge_2022) %>%
+  rbind(rain_gauge_2023) %>%
+  rbind(rain_gauge_2024)
+
 # save to disk ----
 
 # convert to RDS objects to save memory space for whoever needs it
@@ -52,3 +109,8 @@ saveRDS(
   obj = tin_elev, 
   file = here("data", "intermediate_data", "tin_elev_2018.RDS")
   )
+
+saveRDS(
+  obj = rain_gauge_10yr, 
+  file = here("data", "intermediate_data", "rain_gauge_2015-2024.RDS")
+)
