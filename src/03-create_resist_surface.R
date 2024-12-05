@@ -40,7 +40,15 @@ tin_elev <- show_package("4ab91af6-6b08-4318-aee0-87f163891e53") %>%
   get_resource()
 
 # could also import shapefile from disk if the above code doesn't work
-#sf::st_read(here(
+# sf::st_read(here(
 #  "data", "input_data", "resist_surf", "to_tin_elev_2023", 
 #  "2023_TIN.shp")
 #  )
+
+# save to disk ----
+
+# convert to RDS objects to save memory space for whoever needs it
+saveRDS(
+  obj = tin_elev, 
+  file = here("data", "intermediate_data", "tin_elev_2018.RDS")
+  )
