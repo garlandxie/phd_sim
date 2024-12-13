@@ -7,6 +7,7 @@ library(opendatatoronto)  # for importing Open Toronto data
 library(Metrics)          # for calculating mean square error
 library(raster)           # for rasterizing image data
 library(gstat)            # for analyzing Kriging spatial interpolation
+library(sf)
 
 # import ----
 
@@ -124,3 +125,9 @@ idw_raster <- raster(
   crs= crs(to_area)
   )
 
+## save to disk ----
+
+write.csv(
+  rg_summary,
+  here("data", "intermediate_data", "rainfall.csv")
+)
