@@ -7,7 +7,7 @@ library(opendatatoronto)  # for importing Open Toronto data
 library(Metrics)          # for calculating mean square error
 library(raster)           # for rasterizing image data
 library(gstat)            # for analyzing Kriging spatial interpolation
-library(sf)
+library(stars)
 
 # import ----
 
@@ -124,6 +124,61 @@ idw_raster <- raster(
   idw(ppp_rainfall, power=optimal_power, at="pixels"),
   crs= crs(to_area)
   )
+
+## create prediction grid ---
+## create prediction grid
+bbox <- to_area %>%
+  st_transform(crs = 32617) %>%
+  st_bbox()
+
+cell_size <- 0.6
+x <- seq(bbox$xmin, bbox$xmax, by=cell_size)
+y <- seq(bbox$ymin, bbox$ymax, by=cell_size)
+
+grd <- expand.grid(x = x, y = y)
+plot(grd$x, grd$y)
+
+grd$mean_annual_rf <- 1
+grd <- st_as_stars(grd, crs=st_crs(to_area))
+st_crs(grd) <- st_crs(bbox)
+
+
+## analysis: idw 2 ----
+rg_idw <- gstat::idw(mean_annual_rf ~ 1, locations=rg_vc2, newdata=grd, idp = 2)
+plot(rast(rg_idw["var1.pred"]))
+
+## analysis: kriging ----
+
+## check for stationarity
+rg_vc <- rg_summary %>%
+  st_as_sf(coords = c("longitude", "latitude")) %>%
+  st_set_crs(4326) %>%
+  st_transform(32617) %>%
+  dplyr::mutate(lon = sf::st_coordinates(.)[,1],
+                lat = sf::st_coordinates(.)[,2]) %>%
+  st_drop_geometry()
+
+rg_vc2 <- rg_summary %>%
+  st_as_sf(coords = c("longitude", "latitude")) %>%
+  st_set_crs(4326) %>%
+  st_transform(32617) 
+
+coordinates(rg_vc) <- ~lon + lat
+rainfall_vc <- variogram(mean_annual_rf ~ 1, data = rg_vc, cloud = TRUE)
+plot(rainfall_vc, ylab=bquote(gamma), xlab=c("h (separation distance in m)"))
+
+## get sample variogram
+rg_v <- gstat::variogram(log(mean_annual_rf) ~ 1, rg_vc)
+plot(rg_v, ylab=bquote(gamma), xlab=c("h (separation distance in m)"))
+
+## get theoretical variogram
+rg_v_t <- vgm(psill=0.01, "Sph", range=5000, nugget=0.001)
+plot(rg_v, rg_v_t, cutoff = 0.2)
+rg_vfit <- fit.variogram(rg_v, rg_v_t)
+
+# ordinary kriging
+rg_ok <- gstat::krige(log(mean_annual_rf) ~ 1, rg_vc2, grd, rg_vfit)
+plot(terra::rast(rg_ok['var1.var']))
 
 ## save to disk ----
 
