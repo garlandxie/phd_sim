@@ -1,25 +1,3 @@
-// Get the boundary of Toronto
-var geometry = 
-    /* color: #d63000 */
-    /* displayProperties: [
-      {
-        "type": "rectangle"
-      },
-      {
-        "type": "rectangle"
-      }
-    ] */
-    ee.Geometry.MultiPolygon(
-        [[[[-79.67199031180144, 43.87844835367451],
-           [-79.67199031180144, 43.558231140741036],
-           [-79.10070124930144, 43.558231140741036],
-           [-79.10070124930144, 43.87844835367451]]],
-         [[[-79.53500453299284, 43.71352873374248],
-           [-79.53500453299284, 43.713032421571846],
-           [-79.52333155936003, 43.713032421571846],
-           [-79.52333155936003, 43.71352873374248]]]], null, false);
-
-
 // Calculate NDVI for a single year 
 function NVDI(image){
   var nir = image.select('SR_B5')
@@ -27,7 +5,6 @@ function NVDI(image){
   var ndvi = nir.subtract(red).divide(nir.add(red)).rename('nd');
   return(ndvi)
 }
-
 
 // Get NDVI composites across 2016-2024
 // during the frost-free growing season in Toronto, Ontario (Zone B)
@@ -40,6 +17,9 @@ function NVDI(image){
 
 
 // Note: I need to figure out how to apply certain masks (e.g., cloud cover)
+
+var geometry = ee.FeatureCollection("projects/ee-garlandxie/assets/to_boundary")
+                 .geometry()
 
 var l8_2016 = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
            .filterBounds(geometry)
@@ -116,15 +96,21 @@ var mergedCollection = ee.ImageCollection(
          .merge(l8_2024)
          )
          
+// Get yearly NDVI composite            
 var finalOutput = mergedCollection.reduce(ee.Reducer.median())
                                   .clip(geometry)
-
+                                  
+// Visualize data
 var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 Map.addLayer(finalOutput, ndviParams, 'NDVI image')
 
 // Export to Google Drive
+var crs_utm_17N = 'PROJCS["NAD83 / UTM zone 17N",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101],TOWGS84[0,0,0,0,0,0,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-81],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","26917"]]';
+
 Export.image.toDrive({
   image: finalOutput,
-  description: 'ndvi_to_2016-2024_10m_res',
-  scale: 30
+  description: 'ndvi_to_2016-2024_3m_res',
+  crs: crs_utm_17N,
+  maxPixels: 209242992,
+  scale: 2.5
 })
