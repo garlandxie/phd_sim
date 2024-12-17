@@ -18,12 +18,12 @@ Map.setCenter(-79.72377617187499, 43.864467866301716, 11);
 Map.addLayer(slope_to, {min: 0, max: 45}, 'Slope');
 
 // Export to Google Drive
-var crs_utm_17N = 'PROJCS["NAD83 / UTM zone 17N",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101],TOWGS84[0,0,0,0,0,0,0]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-81],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","26917"]]';
-
 Export.image.toDrive({
   image: slope_to,
   description: 'slope_to_3m_res',
-  crs: crs_utm_17N,
+  folder: "google earth engine",
+  fileFormat: 'GeoTIFF',
+  crs: 'EPSG:26917', 
   maxPixels: 209242992,
   scale: 2.5}  
   );
