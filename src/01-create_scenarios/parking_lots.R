@@ -23,12 +23,6 @@ tm <- show_package("bb408f36-6824-4158-8a12-d4efe6465959") %>%
   dplyr::filter(name == "Parking Lot WGS84") %>%
   get_resource() 
 
-## existing green spaces ----
-ugs <- show_package("9a284a84-b9ff-484b-9e30-82f22c1780b9") %>%
-  list_package_resources() %>%
-  dplyr::filter(name == "Green Spaces - 4326.zip") %>%
-  get_resource()
-
 # clean data ----
 
 crs_raster <- st_crs(r)
@@ -96,11 +90,6 @@ missing_polys2 <- dplyr::inner_join(
 pl_final <- rbind(tm_zn_orange, missing_polys2) 
 
 # save to disk -----
-
-sf::st_write(
-  obj = nei_polygons,
-  dsn = here("data", "intermediate_data", "nei_scores.shp")
-)
 
 sf::st_write(
   obj = pl_final,
