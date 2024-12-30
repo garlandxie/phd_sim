@@ -1,11 +1,11 @@
 # libraries ----
-library(opendatatoronto)
-library(dplyr)
-library(sf)
-library(raster)
-library(here)
-library(exactextractr)
-library(stringr)
+library(opendatatoronto) # for extracting open data from the web
+library(dplyr)           # for manipulating data
+library(sf)              # for manipulating geospatial data 
+library(raster)          # for manipulating raster data 
+library(here)            # for creating relative file-paths
+library(exactextractr)   # for calculating zonal statistics
+library(stringr)         # for manipulating string characters 
 
 # import ----
 
