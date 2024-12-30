@@ -95,37 +95,8 @@ rg_summary <- rg_tidy %>%
   geom_point(aes(size = mean_annual_rf))
 ) 
 
-# analysis: IDW ----
+## prepare for interpolation ----
 
-## prepare the analysis by creating a point pattern process
-bbox <- sf::st_bbox(to_area)
-obs_window <- owin(xrange = c(bbox[1], bbox[3]), yrange = c(bbox[2], bbox[4]))
-ppp_rainfall <- ppp(
-  rg_summary$longitude, rg_summary$latitude,
-  window = obs_window,
-  marks = rg_summary$mean_annual_rf
-  )
-
-## perform IDW
-## use leave-out one cross-validation to obtain lowest error
-powers <- seq(0.001, 10, 0.01)
-mse_result <- NULL
-for(power in powers){
-  CV_idw <- idw(ppp_rainfall, power=power, at="points")
-  mse_result <- c(mse_result,
-                  Metrics::mse(ppp_rainfall$marks,CV_idw))
-}
-optimal_power <- powers[which.min(mse_result)]
-plot(powers, mse_result)
-
-## rasterize
-## NOTE: may need to change CRS later on 
-idw_raster <- raster(
-  idw(ppp_rainfall, power=optimal_power, at="pixels"),
-  crs= crs(to_area)
-  )
-
-## create prediction grid ---
 ## create prediction grid
 bbox <- to_area %>%
   st_transform(crs = 32617) %>%
@@ -142,27 +113,13 @@ grd$mean_annual_rf <- 1
 grd <- st_as_stars(grd, crs=st_crs(to_area))
 st_crs(grd) <- st_crs(bbox)
 
-
-## analysis: idw 2 ----
+## analysis: idw ----
 rg_idw <- gstat::idw(mean_annual_rf ~ 1, locations=rg_vc2, newdata=grd, idp = 2)
 plot(rast(rg_idw["var1.pred"]))
 
-## analysis: kriging ----
+# analysis: kriging ----
 
 ## check for stationarity
-rg_vc <- rg_summary %>%
-  st_as_sf(coords = c("longitude", "latitude")) %>%
-  st_set_crs(4326) %>%
-  st_transform(32617) %>%
-  dplyr::mutate(lon = sf::st_coordinates(.)[,1],
-                lat = sf::st_coordinates(.)[,2]) %>%
-  st_drop_geometry()
-
-rg_vc2 <- rg_summary %>%
-  st_as_sf(coords = c("longitude", "latitude")) %>%
-  st_set_crs(4326) %>%
-  st_transform(32617) 
-
 coordinates(rg_vc) <- ~lon + lat
 rainfall_vc <- variogram(mean_annual_rf ~ 1, data = rg_vc, cloud = TRUE)
 plot(rainfall_vc, ylab=bquote(gamma), xlab=c("h (separation distance in m)"))
