@@ -65,6 +65,7 @@ pl <- read_sf(here("data", "intermediate_data", "parking-lots-in-parkland-priori
 ## get consistent crs ----
 crs_lc <- st_crs(lc_3m)
 ugs_transform <- st_transform(ugs, crs_lc)
+pl_transform <- st_transform(pl, crs_lc)
 
 ## apply zonal statistics ----
 
@@ -80,7 +81,7 @@ ws_bv <- exact_extract(wind_3m, ugs_transform, "majority")
 ndvi_bv <- exact_extract(ndvi_3m, ugs_transform, "majority")
 
 ## combine remote sensing variables  ----
-ugs_tidy <- ugs %>% 
+ugs_tidy <- ugs_transform %>% 
   cbind(lc_bv) %>%
   cbind(sw_bv) %>%
   cbind(ph_bv) %>%
@@ -125,8 +126,8 @@ soil_sand_dist <- ugs_tidy %>%
   pull(soilsand_bv)
 
 ## assign values to parking lots ----
-pl_tidy <- pl %>%
-  mutate(
+pl_tidy <- pl_transform %>%
+  dplyr::mutate(
     landcover = sample(ugs_tidy$landcover_bv, size = nrow(pl), replace = TRUE),
     soilwater = sample(soil_water_dist, size = nrow(pl), replace = TRUE),
     soilph = sample(soil_ph_dist, size = nrow(pl), replace = TRUE),
@@ -148,5 +149,15 @@ pl_tidy <- pl %>%
     windspeed
   )
 
+## rasterize polygons ----
 
+pl_r_lc <- pl_tidy %>%
+  dplyr::select(landcover, geometry) %>%
+  terra::vect()
 
+lc_spatrast <- terra::rast(lc_3m)
+
+pl_r <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover", fun = min, update = TRUE)
+
+terra::writeRaster(pl_r, filename = here("pl_r.tiff"))
+terra::writeRaster(lc_spatrast, filename = here("lc_r.tiff"))
