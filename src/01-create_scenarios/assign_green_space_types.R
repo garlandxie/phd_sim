@@ -7,8 +7,9 @@ library(sf)               # for manipulating geospatial (vector) data
 library(raster)           # for manipulating geospatial (raster) data  
 library(exactextractr)    # for calculating zonal statistics
 library(ggplot2)          # for visualizing data 
+library(fasterize)        # for rasterizing polygons
 
-# import ----
+# import data ----
 
 ## existing green spaces (vector) ----
 ugs <- list_package_resources("9a284a84-b9ff-484b-9e30-82f22c1780b9") %>%
@@ -59,7 +60,7 @@ ndvi_3m <- raster(here(
 ## parking lots ----
 pl <- read_sf(here("data", "intermediate_data", "parking-lots-in-parkland-priority.shp"))
 
-# clean -----
+# clean data -----
 
 ## get consistent crs ----
 crs_lc <- st_crs(lc_3m)
@@ -68,6 +69,7 @@ ugs_transform <- st_transform(ugs, crs_lc)
 ## apply zonal statistics ----
 
 # a bit slow: 10 minute run or so 
+# could try to clip the rasters using the UGS shapefiles to make it faster
 lc_bv <- exact_extract(lc_3m, ugs_transform, "majority")
 sw_bv <- exact_extract(sw_3m, ugs_transform, "majority")
 ph_bv <- exact_extract(ph_3m, ugs_transform, "majority")
@@ -77,7 +79,7 @@ ss_bv <- exact_extract(sand_3m, ugs_transform, "majority")
 ws_bv <- exact_extract(wind_3m, ugs_transform, "majority")
 ndvi_bv <- exact_extract(ndvi_3m, ugs_transform, "majority")
 
-## tidy things up ----
+## combine remote sensing variables  ----
 ugs_tidy <- ugs %>% 
   cbind(lc_bv) %>%
   cbind(sw_bv) %>%
@@ -100,3 +102,51 @@ ugs_tidy <- ugs %>%
     ndvi_bv, 
     geometry) %>%
   filter(landcover_bv %in% c(10, 30, 40, 60)) 
+
+# save to disk 
+# st_write(ugs_tidy, dsn = here("data", "intermediate_data", "ugs_quality.shp"))
+# read_sf(here("data", "intermediate_data", "ugs_quality.shp"))
+
+# remove zero values for some environmental variables
+soil_water_dist <- ugs_tidy %>%
+  dplyr::filter(soilwater_bv > 0) %>%
+  pull(soilwater_bv)
+
+soil_ph_dist <- ugs_tidy %>%
+  dplyr::filter(soilph_bv > 0) %>%
+  pull(soilph_bv)
+
+soil_clay_dist <- ugs_tidy %>%
+  dplyr::filter(soilclay_bv > 0) %>%
+  pull(soilclay_bv)
+
+soil_sand_dist <- ugs_tidy %>%
+  dplyr::filter(soilsand_bv > 0) %>%
+  pull(soilsand_bv)
+
+## assign values to parking lots ----
+pl_tidy <- pl %>%
+  mutate(
+    landcover = sample(ugs_tidy$landcover_bv, size = nrow(pl), replace = TRUE),
+    soilwater = sample(soil_water_dist, size = nrow(pl), replace = TRUE),
+    soilph = sample(soil_ph_dist, size = nrow(pl), replace = TRUE),
+    slope = sample(ugs_tidy$slope_bv, size = nrow(pl), replace = TRUE),
+    soilclay = sample(soil_clay_dist, size = nrow(pl), replace = TRUE),
+    soilsand = sample(soil_sand_dist, size = nrow(pl), replace = TRUE),
+    windspeed = sample(ugs_tidy$windspeed_bv, size = nrow(pl), replace = TRUE),
+    ndvi = sample(ugs_tidy$ndvi_bv, size = nrow(pl), replace = TRUE)
+  ) %>%
+  dplyr::select(
+    objectd, 
+    landcover, 
+    soilwater, 
+    soilph,
+    slope,
+    soilclay,
+    soilsand,
+    ndvi, 
+    windspeed
+  )
+
+
+
