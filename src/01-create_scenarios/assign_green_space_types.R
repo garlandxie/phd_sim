@@ -106,7 +106,7 @@ ugs_tidy <- ugs_transform %>%
 
 # save to disk 
 # st_write(ugs_tidy, dsn = here("data", "intermediate_data", "ugs_quality.shp"))
-# read_sf(here("data", "intermediate_data", "ugs_quality.shp"))
+# ugs_tidy <- read_sf(here("data", "intermediate_data", "ugs_quality.shp"))
 
 # remove zero values for some environmental variables
 soil_water_dist <- ugs_tidy %>%
@@ -126,9 +126,11 @@ soil_sand_dist <- ugs_tidy %>%
   pull(soilsand_bv)
 
 ## assign values to parking lots ----
+set.seed(10)
+
 pl_tidy <- pl_transform %>%
   dplyr::mutate(
-    landcover = sample(ugs_tidy$landcover_bv, size = nrow(pl), replace = TRUE),
+    landcover = sample(ugs_tidy$landcover_bv, nrow(pl), replace = TRUE),
     soilwater = sample(soil_water_dist, size = nrow(pl), replace = TRUE),
     soilph = sample(soil_ph_dist, size = nrow(pl), replace = TRUE),
     slope = sample(ugs_tidy$slope_bv, size = nrow(pl), replace = TRUE),
@@ -149,15 +151,28 @@ pl_tidy <- pl_transform %>%
     windspeed
   )
 
-## rasterize polygons ----
+## reclassify land cover ----
 
-pl_r_lc <- pl_tidy %>%
-  dplyr::select(landcover, geometry) %>%
-  terra::vect()
-
+# convert into terra class objects
+pl_r_lc <- terra::vect(pl_tidy)
 lc_spatrast <- terra::rast(lc_3m)
+lc_spatrast2 <- terra::rast(lc_3m) # to avoid overwriting lc_spatrast
 
-pl_r <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover", fun = min, update = TRUE)
+# remove color table for each landcover raster
+terra::coltab(lc_spatrast) <- NULL
+terra::coltab(lc_spatrast2) <- NULL
 
-terra::writeRaster(pl_r, filename = here("pl_r.tiff"))
-terra::writeRaster(lc_spatrast, filename = here("lc_r.tiff"))
+# create a raster with assigned green spaces values for each parking lot
+pl_r <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover")
+
+# use raster algebra to replace impervious surface values
+# with green spaces values for each parking lot 
+lc_spatrast2[!is.na(pl_r[])] <- pl_r[!is.na(pl_r[])]
+
+# save to disk -----
+
+## reclassify land cover ----
+writeRaster(
+  x = lc_spatrast2, 
+  filename = here("data", "intermediate_data", "lc_reclassify.tiff")
+  )
