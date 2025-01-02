@@ -85,6 +85,13 @@ pl_lc <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover")
 # with green spaces values for each parking lot 
 lc_spatrast2[!is.na(pl_lc[])] <- pl_lc[!is.na(pl_lc[])]
 
+## reclassify soil water ----
+
+sw_spatrast <- terra::rast(sw_3m)
+sw_spatrast2 <- terra::rast(sw_3m) 
+pl_sw <- terra::rasterize(pl_r_lc, sw_spatrast, field = "soilwater")
+sw_spatrast2[!is.na(pl_sw[])] <- pl_sw[!is.na(pl_sw[])]
+
 # save to disk -----
 
 ## reclassify land cover ----
@@ -92,3 +99,10 @@ writeRaster(
   x = lc_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_lc.tiff")
 )
+
+## reclassify soil water ----
+writeRaster(
+  x = lc_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_sw.tiff")
+)
+
