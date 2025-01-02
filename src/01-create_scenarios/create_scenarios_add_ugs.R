@@ -51,12 +51,26 @@ ndvi_3m <- raster(here(
   "ndvi_to_2016-2024_3m_res.tif")
 )
 
+# clean data ----
+
+# do quality control
+# ensure consistent projected coordinate reference system
+epsg_2617 <- CRS('+init=EPSG:26917')
+crs(lc_3m) <- epsg_2617
+crs(sw_3m) <- epsg_2617
+crs(ph_3m) <- epsg_2617
+crs(slope_3m) <- epsg_2617
+crs(clay_3m) <- epsg_2617
+crs(sand_3m) <- epsg_2617
+crs(wind_3m) <- epsg_2617
+crs(ndvi_3m) <- epsg_2617 
+
 # perform raster algebra ----
 
 ## reclassify land cover ----
 
 # convert into terra class objects
-pl_r_lc <- terra::vect(pl_tidy)
+pl_r_lc <- terra::vect(pl)
 lc_spatrast <- terra::rast(lc_3m)
 lc_spatrast2 <- terra::rast(lc_3m) # to avoid overwriting lc_spatrast
 
@@ -65,11 +79,11 @@ terra::coltab(lc_spatrast) <- NULL
 terra::coltab(lc_spatrast2) <- NULL
 
 # create a raster with assigned green spaces values for each parking lot
-pl_r <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover")
+pl_lc <- terra::rasterize(pl_r_lc, lc_spatrast, field = "landcover")
 
 # use raster algebra to replace impervious surface values
 # with green spaces values for each parking lot 
-lc_spatrast2[!is.na(pl_r[])] <- pl_r[!is.na(pl_r[])]
+lc_spatrast2[!is.na(pl_lc[])] <- pl_lc[!is.na(pl_lc[])]
 
 # save to disk -----
 
@@ -78,5 +92,3 @@ writeRaster(
   x = lc_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_lc.tiff")
 )
-
-
