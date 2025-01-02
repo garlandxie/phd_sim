@@ -65,7 +65,17 @@ pl <- read_sf(here(
 # clean data -----
 
 ## get consistent crs ----
-crs(lc_3m) <- CRS('+init=EPSG:26917')
+epsg_2617 <- CRS('+init=EPSG:26917')
+crs(lc_3m) <- epsg_2617
+crs(sw_3m) <- epsg_2617
+crs(ph_3m) <- epsg_2617
+crs(slope_3m) <- epsg_2617
+crs(clay_3m) <- epsg_2617
+crs(sand_3m) <- epsg_2617
+crs(wind_3m) <- epsg_2617
+crs(ndvi_3m) <- epsg_2617 
+
+# assign crs to green space and parking lot dataset
 crs_lc <- st_crs(lc_3m)
 ugs_transform <- st_transform(ugs, crs_lc)
 pl_transform <- st_transform(pl, crs_lc)
