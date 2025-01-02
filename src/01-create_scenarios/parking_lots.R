@@ -18,8 +18,7 @@ r <- stack(here(
   )
 
 ## parking lot (polygons) ----
-tm <- show_package("bb408f36-6824-4158-8a12-d4efe6465959") %>%
-  list_package_resources() %>%
+tm <- list_package_resources("bb408f36-6824-4158-8a12-d4efe6465959") %>%
   dplyr::filter(name == "Parking Lot WGS84") %>%
   get_resource() 
 
@@ -92,13 +91,15 @@ pl_final <- rbind(tm_zn_orange, missing_polys2)
 # save to disk -----
 
 sf::st_write(
-  obj = pl_final,
-  dsn = here("data", "intermediate_data", "parking-lots-in-parkland-priority.shp")
+  obj = missing_polys2,
+  dsn = here(
+    "data", "input_data", "parkland_priority",
+    "missing_polygons.shp")
 )
 
 sf::st_write(
-  obj = missing_polys2,
-  dsn = here("data", "input_data", "parkland_priority", "missing_polygons.shp")
+  obj = pl_final,
+  dsn = here(
+    "data", "intermediate_data", "parking lots",
+    "parking-lots-in-parkland-priority.shp")
 )
-
-
