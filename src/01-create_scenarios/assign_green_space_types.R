@@ -104,12 +104,10 @@ ugs_tidy <- ugs_transform %>%
     soilsand_bv = ss_bv,
     windspeed_bv = ws_bv,
     ndvi_bv, 
-    geometry) %>%
-  filter(landcover_bv %in% c(10, 30, 40, 60)) 
+    geometry) 
 
-# save to disk 
-# st_write(ugs_tidy, dsn = here("data", "intermediate_data", "ugs_quality.shp"))
-# ugs_tidy <- read_sf(here("data", "intermediate_data", "ugs_quality.shp"))
+# subset to get environmental variables for ONLY green spaces
+ugs_tidy <- dplyr::filter(ugs_tidy, landcover_bv %in% c(10, 30, 40, 60)) 
 
 # remove zero values for some environmental variables
 soil_water_dist <- ugs_tidy %>%
