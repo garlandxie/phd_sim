@@ -106,6 +106,13 @@ slope_spatrast2 <- terra::rast(slope_3m)
 pl_slope <- terra::rasterize(pl_r_lc, slope_spatrast, field = "slope")
 slope_spatrast2[!is.na(pl_slope[])] <- pl_slope[!is.na(pl_slope[])]
 
+## reclassify sand ----
+
+sand_spatrast <- terra::rast(sand_3m)
+sand_spatrast2 <- terra::rast(sand_3m) 
+pl_sand <- terra::rasterize(pl_r_lc, sand_spatrast, field = "soilsand")
+sand_spatrast2[!is.na(pl_sand[])] <- pl_sand[!is.na(pl_sand[])]
+
 # save to disk -----
 
 ## reclassify land cover ----
@@ -130,4 +137,11 @@ writeRaster(
   x = slope_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_slope.tiff")
 )
+
+## reclassify sand ----
+writeRaster(
+  x = sand_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_sand.tiff")
+)
+
 
