@@ -99,6 +99,13 @@ ph_spatrast2 <- terra::rast(ph_3m)
 pl_ph <- terra::rasterize(pl_r_lc, ph_spatrast, field = "soilph")
 ph_spatrast2[!is.na(pl_ph[])] <- pl_ph[!is.na(pl_ph[])]
 
+## reclassify slope ----
+
+slope_spatrast <- terra::rast(slope_3m)
+slope_spatrast2 <- terra::rast(slope_3m) 
+pl_slope <- terra::rasterize(pl_r_lc, slope_spatrast, field = "slope")
+slope_spatrast2[!is.na(pl_slope[])] <- pl_slope[!is.na(pl_slope[])]
+
 # save to disk -----
 
 ## reclassify land cover ----
@@ -117,5 +124,10 @@ writeRaster(
 writeRaster(
   x = ph_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_ph.tiff")
+)
+## reclassify slope ----
+writeRaster(
+  x = slope_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_slope.tiff")
 )
 
