@@ -1,6 +1,57 @@
 # libraries ----
 library(terra)
+library(raster)
+library(sf)
+library(here)
 
+# import data ----
+
+## parking lot polygons ----
+
+pl <- read_sf(here("data", "intermediate_data", "pl_green_space_type.shp"))
+
+## remote sensing variables (raster) ----
+lc_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "landcover_to_3m_res.tif")
+)
+
+sw_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "soilwater_to_3m_res.tif")
+)
+
+ph_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "soil_pH_to_3m_res.tif")
+)
+
+slope_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "slope_to_3m_res.tif")
+)
+
+clay_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "soil_clay_to_3m_res.tif")
+)
+
+sand_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "soil_sand_to_3m_res.tif")
+)
+
+wind_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "wind_to_3m_res.tif")
+)
+
+ndvi_3m <- raster(here(
+  "data", "input_data", "resist_surfaces",
+  "ndvi_to_2016-2024_3m_res.tif")
+)
+
+# perform raster algebra ----
 
 ## reclassify land cover ----
 
