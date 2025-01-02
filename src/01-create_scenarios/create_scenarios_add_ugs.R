@@ -12,7 +12,7 @@ pl <- read_sf(here("data", "intermediate_data", "pl_green_space_type.shp"))
 
 ## remote sensing variables (raster) ----
 lc_3m <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", 
   "landcover_to_3m_res.tif")
 )
 
@@ -132,43 +132,55 @@ ndvi_spatrast2[!is.na(pl_ndvi[])] <- pl_ndvi[!is.na(pl_ndvi[])]
 ## reclassify land cover ----
 writeRaster(
   x = lc_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_lc.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_lc.tiff")
 )
 
 ## reclassify soil water ----
 writeRaster(
   x = sw_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_sw.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_sw.tiff")
 )
 
 ## reclassify soil ph ----
 writeRaster(
   x = ph_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_ph.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_ph.tiff")
 )
 ## reclassify slope ----
 writeRaster(
   x = slope_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_slope.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_slope.tiff")
 )
 
 ## reclassify sand ----
 writeRaster(
   x = sand_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_sand.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_sand.tiff")
 )
 
 ## reclassify wind ----
 writeRaster(
   x = wind_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_wind.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_wind.tiff")
 )
 
 ## reclassify ndvi ----
 
 writeRaster(
   x = ndvi_spatrast2, 
-  filename = here("data", "intermediate_data", "sc1_add_ugs_ndvi.tiff")
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_ndvi.tiff")
 )
-
-
