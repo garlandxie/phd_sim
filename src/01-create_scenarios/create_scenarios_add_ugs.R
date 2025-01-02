@@ -1,8 +1,8 @@
 # libraries ----
-library(terra)
-library(raster)
-library(sf)
-library(here)
+library(terra)    # for manipulating raster datasets
+library(raster)   # for manipulating raster datasets
+library(sf)       # for manipulating geospatial (vector) files
+library(here)     # for creating relative file-paths
 
 # import data ----
 
