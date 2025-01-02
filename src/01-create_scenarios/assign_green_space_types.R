@@ -65,6 +65,7 @@ pl <- read_sf(here(
 # clean data -----
 
 ## get consistent crs ----
+crs(lc_3m) <- CRS('+init=EPSG:26917')
 crs_lc <- st_crs(lc_3m)
 ugs_transform <- st_transform(ugs, crs_lc)
 pl_transform <- st_transform(pl, crs_lc)
