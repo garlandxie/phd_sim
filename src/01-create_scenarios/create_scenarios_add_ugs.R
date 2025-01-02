@@ -113,6 +113,20 @@ sand_spatrast2 <- terra::rast(sand_3m)
 pl_sand <- terra::rasterize(pl_r_lc, sand_spatrast, field = "soilsand")
 sand_spatrast2[!is.na(pl_sand[])] <- pl_sand[!is.na(pl_sand[])]
 
+## reclassify wind ----
+
+wind_spatrast <- terra::rast(wind_3m)
+wind_spatrast2 <- terra::rast(wind_3m) 
+pl_wind <- terra::rasterize(pl_r_lc, wind_spatrast, field = "windspeed")
+wind_spatrast2[!is.na(pl_wind[])] <- pl_wind[!is.na(pl_wind[])]
+
+# reclassify ndvi ----
+
+ndvi_spatrast <- terra::rast(ndvi_3m)
+ndvi_spatrast2 <- terra::rast(ndvi_3m) 
+pl_ndvi <- terra::rasterize(pl_r_lc, ndvi_spatrast, field = "ndvi")
+ndvi_spatrast2[!is.na(pl_ndvi[])] <- pl_ndvi[!is.na(pl_ndvi[])]
+
 # save to disk -----
 
 ## reclassify land cover ----
@@ -142,6 +156,19 @@ writeRaster(
 writeRaster(
   x = sand_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_sand.tiff")
+)
+
+## reclassify wind ----
+writeRaster(
+  x = wind_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_wind.tiff")
+)
+
+## reclassify ndvi ----
+
+writeRaster(
+  x = ndvi_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_ndvi.tiff")
 )
 
 
