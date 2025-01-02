@@ -92,6 +92,13 @@ sw_spatrast2 <- terra::rast(sw_3m)
 pl_sw <- terra::rasterize(pl_r_lc, sw_spatrast, field = "soilwater")
 sw_spatrast2[!is.na(pl_sw[])] <- pl_sw[!is.na(pl_sw[])]
 
+## reclassify soil pH ----
+
+ph_spatrast <- terra::rast(ph_3m)
+ph_spatrast2 <- terra::rast(ph_3m) 
+pl_ph <- terra::rasterize(pl_r_lc, ph_spatrast, field = "soilph")
+ph_spatrast2[!is.na(pl_ph[])] <- pl_ph[!is.na(pl_ph[])]
+
 # save to disk -----
 
 ## reclassify land cover ----
@@ -102,7 +109,13 @@ writeRaster(
 
 ## reclassify soil water ----
 writeRaster(
-  x = lc_spatrast2, 
+  x = sw_spatrast2, 
   filename = here("data", "intermediate_data", "sc1_add_ugs_sw.tiff")
+)
+
+## reclassify soil ph ----
+writeRaster(
+  x = ph_spatrast2, 
+  filename = here("data", "intermediate_data", "sc1_add_ugs_ph.tiff")
 )
 
