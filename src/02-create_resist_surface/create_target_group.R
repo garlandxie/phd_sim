@@ -3,6 +3,7 @@ library(rgbif)    # for querying GBIF records
 library(here)     # for creating relative file-paths
 library(sf)       # for manipulating geospatial files
 library(wk)       # for manipulating WTK polygons - needed for GBIF queries
+library(janitor)
 
 # import -----------------------------------------------------------------------
 
@@ -38,6 +39,10 @@ wkt_to_boundary <- ugs %>%
   wk::wkt() %>%
   wk::wk_orient()
 
+to_bound <- wkt_to_boundary <- ugs %>%
+  sf::st_bbox() %>%
+  sf::st_as_sfc()
+
 # run GBIF query from API
 occ_download(
   pred_in("speciesKey", keys_id$speciesKey),
@@ -65,6 +70,35 @@ to_occ <- occ_download_get(
       "acceptedScientificName")
   )
 
+# clean data ----
+
+# check for duplicate records
+duplicates <- janitor::get_dupes(to_occ)
+
+# remove focal species (Vincetoxicum rossicum)
+trgt_grp <- dplyr::filter(to_occ, species != "Vincetoxicum rossicum")
+
+# create target group bias raster ----
+
+# aggregate by coordinates
+sum_records <- as.data.frame(dplyr::count(trgt_grp, decimalLatitude, decimalLongitude))
+
+# extract coordinates
+coords <- cbind(sum_records[, "decimalLatitude"], sum_records[, "decimalLongitude"])
+
+# do a 2D kernel density estimation
+target_density <- ks::kde(coords)
+
+# create raster 
+target_raster <- raster::raster(target_density)
+
+# define in UTM 17N
+crs(target_raster) <- '+init=EPSG:26917'
+
+# 
+target_raster <- target_raster - minValue(target_raster)
+target_raster <- terra::rast(target_raster)
+target_raster <- spatialEco::raster.transformation(target_raster, trans="norm")
 
 # save to disk ----
 
