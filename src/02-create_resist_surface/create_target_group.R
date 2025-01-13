@@ -1,14 +1,15 @@
 # libraries --------------------------------------------------------------------
-library(rgbif)    # for querying GBIF records
-library(here)     # for creating relative file-paths
-library(sf)       # for manipulating geospatial files
-library(wk)       # for manipulating WTK polygons - needed for GBIF queries
-library(janitor)  # for cleaning column names
-library(opendatatoronto)
-library(dplyr)
+library(rgbif)            # for querying GBIF records
+library(here)             # for creating relative file-paths
+library(sf)               # for manipulating geospatial files
+library(wk)               # for manipulating WTK polygons - needed for GBIF queries
+library(janitor)          # for cleaning column names
+library(opendatatoronto)  # for getting open data from City of Toronto
+library(dplyr)            # for manipulating data 
 
 # import -----------------------------------------------------------------------
 
+## 
 # load green space dataset from City of Toronto 
 # this is done to query the GBIF occurrence records using a polygon
 ugs <- sf::read_sf(here("data", "input_data", "green_spaces_4326"))
@@ -41,10 +42,6 @@ wkt_to_boundary <- ugs %>%
   wk::wkt() %>%
   wk::wk_orient()
 
-to_bound <- wkt_to_boundary <- ugs %>%
-  sf::st_bbox() %>%
-  sf::st_as_sfc()
-
 # run GBIF query from API
 occ_download(
   pred_in("speciesKey", keys_id$speciesKey),
@@ -72,7 +69,7 @@ to_occ <- occ_download_get(
       "acceptedScientificName")
   )
 
-# clean data ----
+# clean data -------------------------------------------------------------------
 
 # check for duplicate records
 duplicates <- janitor::get_dupes(to_occ)
@@ -87,7 +84,9 @@ to_bound <- list_package_resources("841fb820-46d0-46ac-8dcb-d20f27e57bcc") %>%
 to_bound_utm <- st_transform(to_bound, 32617)
 
 trgt_grp_sf <- trgt_grp %>%
-  st_as_sf(coords = c("decimalLongitude", "decimalLatitude"), crs = "EPSG:4326") %>%
+  st_as_sf(
+    coords = c("decimalLongitude", "decimalLatitude"), 
+    crs = "EPSG:4326") %>%
   st_transform(32617) %>%
   mutate(
     lon = sf::st_coordinates(.)[,1], 
@@ -97,8 +96,7 @@ trgt_grp_sf <- trgt_grp %>%
 trgt_grp_2 <- st_intersection(trgt_grp_sf, to_bound_utm) %>%
   st_drop_geometry()
   
-
-# create target group bias raster ----
+# create target group bias raster ----------------------------------------------
 
 # aggregate by coordinates
 sum_records <- as.data.frame(dplyr::count(trgt_grp_2, lat, lon))
@@ -106,7 +104,7 @@ sum_records <- as.data.frame(dplyr::count(trgt_grp_2, lat, lon))
 # extract coordinates
 coords <- cbind(sum_records[, "lat"], sum_records[, "lon"])
 
-# do a 2D kernel density estimation
+# perform 2D kernel density estimation
 target_density <- ks::kde(coords)
 
 # create raster 
@@ -115,7 +113,8 @@ target_raster <- raster::raster(target_density)
 # define in UTM 17N
 raster::crs(target_raster) <- '+init=EPSG:32617'
 
-# 
+# create probability surface surface
+# range of 0-1 for the pixels 
 target_raster <- target_raster - raster::minValue(target_raster)
 target_raster <- terra::rast(target_raster)
 target_raster <- spatialEco::raster.transformation(target_raster, trans="norm")
@@ -124,5 +123,7 @@ target_raster <- spatialEco::raster.transformation(target_raster, trans="norm")
 
 terra::writeRaster(
   x = target_raster,
-  filename = here("data", "intermediate_data", "target_background", "trgt_prob_raster.tiff")
+  filename = here(
+    "data", "intermediate_data", "target_background",
+    "trgt_prob_raster.tiff")
 )
