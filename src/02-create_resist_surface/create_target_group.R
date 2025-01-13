@@ -9,13 +9,14 @@ library(dplyr)            # for manipulating data
 
 # import -----------------------------------------------------------------------
 
-## 
-# load green space dataset from City of Toronto 
+## boundary of Toronto ---------------------------------------------------------
 # this is done to query the GBIF occurrence records using a polygon
-ugs <- sf::read_sf(here("data", "input_data", "green_spaces_4326"))
+to_bound <- list_package_resources("841fb820-46d0-46ac-8dcb-d20f27e57bcc") %>%
+  get_resource()
 
-# get occurrence records (with geospatial coordinates)
-# of species within the Apocynaceae family
+# occurrence records -----------------------------------------------------------
+
+# GBIF of species within the Apocynaceae family
 # the collective records of all species within this family
 # will form the target-ground background option
 keys_id <- rgbif::name_backbone_checklist(
@@ -35,7 +36,7 @@ keys_id <- rgbif::name_backbone_checklist(
 
 # create WTK polygon of the City of Toronto boundary
 # this polygon should reduce the number of imported queries from GBIF
-wkt_to_boundary <- ugs %>%
+wkt_to_boundary <- to_bound %>%
   sf::st_bbox() %>%
   sf::st_as_sfc() %>%
   sf::st_as_text() %>%
@@ -52,7 +53,7 @@ occ_download(
 )
 
 to_occ <- occ_download_get(
-  key = '0061415-241126133413365',
+  key = '0067091-241126133413365',
   path = here("data", "input_data"),
   overwrite = TRUE
 ) %>%
@@ -71,15 +72,13 @@ to_occ <- occ_download_get(
 
 # clean data -------------------------------------------------------------------
 
-# check for duplicate records
+## check for duplicate records -------------------------------------------------
 duplicates <- janitor::get_dupes(to_occ)
 
-# remove focal species (Vincetoxicum rossicum)
+## remove focal species --------------------------------------------------------
 trgt_grp <- dplyr::filter(to_occ, species != "Vincetoxicum rossicum") 
 
-# get occurrence records within Toronto boundary
-to_bound <- list_package_resources("841fb820-46d0-46ac-8dcb-d20f27e57bcc") %>%
-  get_resource()
+## get occurrence records within Toronto ---------------------------------------
 
 to_bound_utm <- st_transform(to_bound, 32617)
 
