@@ -58,7 +58,7 @@ ndvi_3m <- raster(here(
 
 ## parking lots ----
 pl <- read_sf(here(
-  "data", "intermediate_data", 
+  "data", "intermediate_data", "parking lots",
   "parking-lots-in-parkland-priority.shp")
   )
 
@@ -166,5 +166,7 @@ pl_tidy <- pl_transform %>%
 
 st_write(
   obj = pl_tidy, 
-  dsn = here("data", "intermediate_data", "pl_green_space_type.shp")
+  dsn = here(
+    "data", "intermediate_data", "parking lots", 
+    "pl_green_space_type.shp")
 )
