@@ -122,11 +122,7 @@ target_raster <- spatialEco::raster.transformation(target_raster, trans="norm")
 
 # save to disk ----
 
-ggsave(
-  filename = here("output", "data_appendix", "GBIFrecs_trgtgrp.png"), 
-  plot = plot_trgtgrp, 
-  device = "png", 
-  units = "in", 
-  height = 5, 
-  width = 7
+terra::writeRaster(
+  x = target_raster,
+  filename = here("data", "intermediate_data", "target_background", "trgt_prob_raster.tiff")
 )
