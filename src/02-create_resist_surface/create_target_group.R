@@ -116,10 +116,11 @@ raster::crs(target_raster) <- '+init=EPSG:32617'
 # create probability surface surface
 # range of 0-1 for the pixels 
 target_raster <- target_raster - raster::minValue(target_raster)
-target_raster <- terra::rast(target_raster)
-target_raster <- spatialEco::raster.transformation(target_raster, trans="norm")
+target_raster <- target_raster %>%
+  terra::rast() %>%
+  spatialEco::raster.transformation(trans = "norm")
 
-# save to disk ----
+# save to disk -----------------------------------------------------------------
 
 terra::writeRaster(
   x = target_raster,
