@@ -8,7 +8,9 @@ library(here)     # for creating relative file-paths
 
 ## parking lot polygons ----
 
-pl <- read_sf(here("data", "intermediate_data", "pl_green_space_type.shp"))
+pl <- read_sf(here(
+  "data", "intermediate_data", "parking lots",
+  "pl_green_space_type.shp"))
 
 ## remote sensing variables (raster) ----
 lc_3m <- raster(here(
@@ -99,6 +101,13 @@ ph_spatrast2 <- terra::rast(ph_3m)
 pl_ph <- terra::rasterize(pl_r_lc, ph_spatrast, field = "soilph")
 ph_spatrast2[!is.na(pl_ph[])] <- pl_ph[!is.na(pl_ph[])]
 
+## reclassify soil clay ----
+
+clay_spatrast <- terra::rast(clay_3m)
+clay_spatrast2 <- terra::rast(clay_3m) 
+pl_clay <- terra::rasterize(pl_r_lc, clay_spatrast, field = "soilclay")
+clay_spatrast2[!is.na(pl_clay[])] <- pl_clay[!is.na(pl_clay[])]
+
 ## reclassify slope ----
 
 slope_spatrast <- terra::rast(slope_3m)
@@ -152,6 +161,16 @@ writeRaster(
     "data", "intermediate_data", "ugs_scenarios",
     "sc1_add_ugs_ph.tiff")
 )
+
+## reclassify soil clay ----
+writeRaster(
+  x = clay_spatrast2, 
+  filename = here(
+    "data", "intermediate_data", "ugs_scenarios",
+    "sc1_add_ugs_clay.tiff")
+)
+
+
 ## reclassify slope ----
 writeRaster(
   x = slope_spatrast2, 
