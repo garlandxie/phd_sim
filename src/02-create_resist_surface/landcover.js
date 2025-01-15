@@ -6,23 +6,22 @@ var dataset = ee.ImageCollection('ESA/WorldCover/v100').first()
 var geometry = ee.FeatureCollection("projects/ee-garlandxie/assets/to_boundary")
                  .geometry()
                  
-var image = dataset.clip(geometry)
+var lc_to = dataset.clip(geometry)
 
 // Visualize 
 var visualization = {
   bands: ['Map'],
 };
 
-Map.addLayer(image, visualization, 'Landcover');
-Map.centerObject(image);
+Map.addLayer(lc_to, visualization, 'Landcover');
+Map.centerObject(lc_to);
 
 // Export to Google Drive
 Export.image.toDrive({
-  image: dataset,
-  description: 'landcover_to_3m_res',
-  folder: "google earth engine",
+  image: lc_to,
+  description: 'landcover_to_20m_res',
   fileFormat: 'GeoTIFF',
   crs: 'EPSG:26917',
   maxPixels: 654958084580,
-  scale: 2.5
+  scale: 20
 })
