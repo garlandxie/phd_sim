@@ -38,7 +38,7 @@ occ_download(
 # download queried occurrence record
 gbif_occ <- occ_download_get(
   key = '0067143-241126133413365',
-  path = here("data", "input_data"),
+  path = here("data", "input_data", "occ_recs_gbif"),
   overwrite = TRUE
   ) %>%
   occ_download_import(
