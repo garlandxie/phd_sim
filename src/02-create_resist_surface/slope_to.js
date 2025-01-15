@@ -20,10 +20,10 @@ Map.addLayer(slope_to, {min: 0, max: 45}, 'Slope');
 // Export to Google Drive
 Export.image.toDrive({
   image: slope_to,
-  description: 'slope_to_3m_res',
+  description: 'slope_to_20m_res',
   folder: "google earth engine",
   fileFormat: 'GeoTIFF',
   crs: 'EPSG:26917', 
   maxPixels: 209242992,
-  scale: 2.5}  
+  scale: 20}  
   );
