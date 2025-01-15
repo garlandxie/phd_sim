@@ -100,10 +100,10 @@ Map.addLayer(finalOutput, ndviParams, 'NDVI image');
 // Export to Google Drive
 Export.image.toDrive({
   image: finalOutput,
-  description: 'ndvi_to_2016-2024_3m_res',
+  description: 'ndvi_to_2016-2024_20m_res',
   folder: "google earth engine",
   fileFormat: 'GeoTIFF',
   crs: 'EPSG:26917',
   maxPixels: 209242992,
-  scale: 2.5
+  scale: 20
 }); 
