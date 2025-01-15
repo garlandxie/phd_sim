@@ -64,12 +64,6 @@ edd_occ <- read.csv(here("data", "input_data", "eddmaps", "mappings.csv"))
 
 ## geospatial coordinates ------------------------------------------------------
 
-# positional uncertainty should be twice lower (10 m) than the grain size (20 m)
-# references: 
-# (1) Gábor et al. (2022). MEE. 
-# (2) Moudrý et al. (2024). Ecography. 
-# (3) 
-
 # GBIF
 gbif_occ_clean <- gbif_occ %>%
   
@@ -140,5 +134,7 @@ out.round <- to_occ_clean %>%
 
 write.csv(
   x = occ_final, 
-  file = here("data", "intermediate_data", "occ_tidy.csv")
+  file = here(
+    "data", "intermediate_data", "occurrence_records", 
+    "occ_tidy.csv")
 )
