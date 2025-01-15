@@ -58,7 +58,10 @@ gbif_occ <- occ_download_get(
 
 # obtained records online as of Jan 14, 2025
 # there's no R API available for EDDMAps right now  
-edd_occ <- read.csv(here("data", "input_data", "eddmaps", "mappings.csv"))
+edd_occ <- read.csv(here(
+  "data", "input_data", "occ_recs_eddmaps", 
+  "mappings_2025-01-13.csv")
+  )
 
 # clean data -------------------------------------------------------------------
 
