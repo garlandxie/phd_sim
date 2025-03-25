@@ -1,0 +1,98 @@
+Generalized Linear Model Results
+
+Settings:
+
+	 model family:  binomial
+	 simplification method:  AIC
+
+
+Results:
+	 number covariates in final model:  4
+
+Call:
+glm(formula = Response ~ ndvi + dsv_deadspots + I(wind_speed^2) + 
+    slope, family = out$modelFamily, data = dat, weights = dat$Weight, 
+    na.action = "na.exclude")
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.4931  -0.2310  -0.1657  -0.1256   2.0379  
+
+Coefficients:
+                Estimate Std. Error z value Pr(>|z|)    
+(Intercept)     -2.17342    0.42432  -5.122 3.02e-07 ***
+ndvi             7.05899    1.24777   5.657 1.54e-08 ***
+dsv_deadspots   -0.97760    0.21994  -4.445 8.80e-06 ***
+I(wind_speed^2)  0.09431    0.03606   2.616  0.00891 ** 
+slope            0.02618    0.01787   1.465  0.14295    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 775.59  on 8285  degrees of freedom
+Residual deviance: 645.94  on 8281  degrees of freedom
+AIC: 323.06
+
+Number of Fisher Scoring iterations: 4
+
+
+
+============================================================ 
+
+Evaluation Statistics applied to Cross validation split:
+
+ 
+	 Correlation Coefficient      : 0.1791453  (sd 0.048637) 
+	 NULL Deviance                : 0.289 (sd 0.042382)
+	 Fit Deviance                 : 1.1228 (sd 0.024057)
+	 Explained Deviance           : -0.83384 (sd 0.046064)
+	 Percent Deviance Explained   : -296.38 (sd 60.678)
+
+  Threshold Methods based on 
+	 Mean Threshold               : 0.501 (sd 0.011972) 
+
+	 Confusion Matrix: 
+
+         observed
+predicted    1    0
+        1  197 2402
+        0   89 5598
+
+	 AUC                          :  0.75629  (sd 0.058629) 
+	 AUC-pr                       :  0.1105984  (sd 0.036355) 
+	 Percent Correctly Classified :  69.93746  (sd 1.8345) 
+	 Sensitivity                  :  0.6771289  (sd 0.1119) 
+	 Specificity                  :  0.6996871  (sd 0.02172) 
+	 Kappa                        :  0.0775577  (sd 0.024548) 
+	 True Skill Statistic         :  0.3768159  (sd 0.095085) 
+
+
+============================================================ 
+
+Evaluation Statistics applied to Final evaluation split:
+
+ 
+	 Correlation Coefficient      : 0.2149514 
+	 NULL Deviance                : 0.29307
+	 Fit Deviance                 : 1.1072
+	 Explained Deviance           : -0.81418
+	 Percent Deviance Explained   : -277.81
+
+  Threshold Methods based on 
+	 Threshold                    :  0.54 
+
+	 Confusion Matrix: 
+
+         observed
+predicted    1    0
+        1   55  479
+        0   17 1521
+
+	 AUC                          :  0.8073 
+	 AUC-pr                       :  0.1068225 
+	 Percent Correctly Classified :  76.06178 
+	 Sensitivity                  :  0.7638889 
+	 Specificity                  :  0.7605 
+	 Kappa                        :  0.1281237 
+	 True Skill Statistic         :  0.5243889 
