@@ -70,6 +70,12 @@ to_occ <- occ_download_get(
       "acceptedScientificName")
   )
 
+## add raster for resampling ---------------------------------------------------
+soil_ph <- terra::rast(here(
+  "data", "input_data", "resist_surfaces",
+  "soil_pH_to_20m_res.tif")
+  )
+
 # clean data -------------------------------------------------------------------
 
 ## check for duplicate records -------------------------------------------------
@@ -80,16 +86,16 @@ trgt_grp <- dplyr::filter(to_occ, species != "Vincetoxicum rossicum")
 
 ## get occurrence records within Toronto ---------------------------------------
 
-to_bound_utm <- st_transform(to_bound, 32617)
+to_bound_utm <- st_transform(to_bound, 26917)
 
 trgt_grp_sf <- trgt_grp %>%
   st_as_sf(
     coords = c("decimalLongitude", "decimalLatitude"), 
     crs = "EPSG:4326") %>%
-  st_transform(32617) %>%
+  st_transform(26917) %>%
   mutate(
-    lon = sf::st_coordinates(.)[,1], 
-    lat = sf::st_coordinates(.)[,2]
+    lat = sf::st_coordinates(.)[,1], 
+    lon = sf::st_coordinates(.)[,2]
   )
 
 trgt_grp_2 <- st_intersection(trgt_grp_sf, to_bound_utm) %>%
@@ -110,7 +116,7 @@ target_density <- ks::kde(coords)
 target_raster <- raster::raster(target_density)
 
 # define in UTM 17N
-raster::crs(target_raster) <- '+init=EPSG:32617'
+raster::crs(target_raster) <- '+init=EPSG:26917'
 
 # create probability surface surface
 # range of 0-1 for the pixels 
@@ -119,11 +125,20 @@ target_raster <- target_raster %>%
   terra::rast() %>%
   spatialEco::raster.transformation(trans = "norm")
 
+# clip new raster to TO boundary
+target_raster2 <- raster::mask(target_raster, to_bound_utm)
+
+# inverse raster values so that some TA parks are downweighted
+# for habitat suitability values
+target_raster2 <- spatialEco::raster.invert(target_raster2)
+
+## ensure pixel resolution of 20m
+tbg_final <- terra::resample(target_raster2, soil_ph)
+
 # save to disk -----------------------------------------------------------------
 
 terra::writeRaster(
-  x = target_raster,
+  x = tbg_final,
   filename = here(
-    "data", "intermediate_data", "target_background",
     "trgt_prob_raster.tiff")
-)
+  )
