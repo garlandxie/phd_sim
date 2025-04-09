@@ -13,44 +13,44 @@ pl <- read_sf(here(
   "pl_green_space_type.shp"))
 
 ## remote sensing variables (raster) ----
-lc_3m <- raster(here(
+lc <- raster(here(
   "data", "input_data", "resist_surfaces", 
-  "landcover_to_3m_res.tif")
+  "landcover_to_20m_converted.tif")
 )
 
-sw_3m <- raster(here(
+sw <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soilwater_to_3m_res.tif")
+  "soil_water_to_20m_converted.tif")
 )
 
-ph_3m <- raster(here(
+ph <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_pH_to_3m_res.tif")
+  "soil_pH_to_20m_converted.tif")
 )
 
-slope_3m <- raster(here(
+slope <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "slope_to_3m_res.tif")
+  "slope_to_20m_converted.tif")
 )
 
-clay_3m <- raster(here(
+clay <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_clay_to_3m_res.tif")
+  "soil_clay_to_20m_res.tif")
 )
 
-sand_3m <- raster(here(
+sand <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_sand_to_3m_res.tif")
+  "soil_sand_to_20m_converted.tif")
 )
 
-wind_3m <- raster(here(
+wind <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "wind_to_3m_res.tif")
+  "wind_to_20m_converted.tif")
 )
 
-ndvi_3m <- raster(here(
+ndvi <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "ndvi_to_2016-2024_3m_res.tif")
+  "ndvi_to_2016-2024_20m_converted.tif")
 )
 
 # clean data ----
@@ -58,14 +58,14 @@ ndvi_3m <- raster(here(
 # do quality control
 # ensure consistent projected coordinate reference system
 epsg_2617 <- CRS('+init=EPSG:26917')
-crs(lc_3m) <- epsg_2617
-crs(sw_3m) <- epsg_2617
-crs(ph_3m) <- epsg_2617
-crs(slope_3m) <- epsg_2617
-crs(clay_3m) <- epsg_2617
-crs(sand_3m) <- epsg_2617
-crs(wind_3m) <- epsg_2617
-crs(ndvi_3m) <- epsg_2617 
+crs(lc) <- epsg_2617
+crs(sw) <- epsg_2617
+crs(ph) <- epsg_2617
+crs(slope) <- epsg_2617
+crs(clay) <- epsg_2617
+crs(sand) <- epsg_2617
+crs(wind) <- epsg_2617
+crs(ndvi) <- epsg_2617 
 
 # perform raster algebra ----
 
@@ -73,8 +73,8 @@ crs(ndvi_3m) <- epsg_2617
 
 # convert into terra class objects
 pl_r_lc <- terra::vect(pl)
-lc_spatrast <- terra::rast(lc_3m)
-lc_spatrast2 <- terra::rast(lc_3m) # to avoid overwriting lc_spatrast
+lc_spatrast <- terra::rast(lc)
+lc_spatrast2 <- terra::rast(lc) # to avoid overwriting lc_spatrast
 
 # remove color table for each landcover raster
 terra::coltab(lc_spatrast) <- NULL
@@ -89,50 +89,50 @@ lc_spatrast2[!is.na(pl_lc[])] <- pl_lc[!is.na(pl_lc[])]
 
 ## reclassify soil water ----
 
-sw_spatrast <- terra::rast(sw_3m)
-sw_spatrast2 <- terra::rast(sw_3m) 
+sw_spatrast <- terra::rast(sw)
+sw_spatrast2 <- terra::rast(sw) 
 pl_sw <- terra::rasterize(pl_r_lc, sw_spatrast, field = "soilwater")
 sw_spatrast2[!is.na(pl_sw[])] <- pl_sw[!is.na(pl_sw[])]
 
 ## reclassify soil pH ----
 
-ph_spatrast <- terra::rast(ph_3m)
-ph_spatrast2 <- terra::rast(ph_3m) 
+ph_spatrast <- terra::rast(ph)
+ph_spatrast2 <- terra::rast(ph) 
 pl_ph <- terra::rasterize(pl_r_lc, ph_spatrast, field = "soilph")
 ph_spatrast2[!is.na(pl_ph[])] <- pl_ph[!is.na(pl_ph[])]
 
 ## reclassify soil clay ----
 
-clay_spatrast <- terra::rast(clay_3m)
-clay_spatrast2 <- terra::rast(clay_3m) 
+clay_spatrast <- terra::rast(clay)
+clay_spatrast2 <- terra::rast(clay) 
 pl_clay <- terra::rasterize(pl_r_lc, clay_spatrast, field = "soilclay")
 clay_spatrast2[!is.na(pl_clay[])] <- pl_clay[!is.na(pl_clay[])]
 
 ## reclassify slope ----
 
-slope_spatrast <- terra::rast(slope_3m)
-slope_spatrast2 <- terra::rast(slope_3m) 
+slope_spatrast <- terra::rast(slope)
+slope_spatrast2 <- terra::rast(slope) 
 pl_slope <- terra::rasterize(pl_r_lc, slope_spatrast, field = "slope")
 slope_spatrast2[!is.na(pl_slope[])] <- pl_slope[!is.na(pl_slope[])]
 
 ## reclassify sand ----
 
-sand_spatrast <- terra::rast(sand_3m)
-sand_spatrast2 <- terra::rast(sand_3m) 
+sand_spatrast <- terra::rast(sand)
+sand_spatrast2 <- terra::rast(sand) 
 pl_sand <- terra::rasterize(pl_r_lc, sand_spatrast, field = "soilsand")
 sand_spatrast2[!is.na(pl_sand[])] <- pl_sand[!is.na(pl_sand[])]
 
 ## reclassify wind ----
 
-wind_spatrast <- terra::rast(wind_3m)
-wind_spatrast2 <- terra::rast(wind_3m) 
+wind_spatrast <- terra::rast(wind)
+wind_spatrast2 <- terra::rast(wind) 
 pl_wind <- terra::rasterize(pl_r_lc, wind_spatrast, field = "windspeed")
 wind_spatrast2[!is.na(pl_wind[])] <- pl_wind[!is.na(pl_wind[])]
 
 # reclassify ndvi ----
 
-ndvi_spatrast <- terra::rast(ndvi_3m)
-ndvi_spatrast2 <- terra::rast(ndvi_3m) 
+ndvi_spatrast <- terra::rast(ndvi)
+ndvi_spatrast2 <- terra::rast(ndvi) 
 pl_ndvi <- terra::rasterize(pl_r_lc, ndvi_spatrast, field = "ndvi")
 ndvi_spatrast2[!is.na(pl_ndvi[])] <- pl_ndvi[!is.na(pl_ndvi[])]
 
@@ -143,7 +143,8 @@ writeRaster(
   x = lc_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_lc.tiff")
+    "sc1_add_ugs_lc.tiff"), 
+  overwrite = TRUE
 )
 
 ## reclassify soil water ----
@@ -151,7 +152,8 @@ writeRaster(
   x = sw_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_sw.tiff")
+    "sc1_add_ugs_sw.tiff"),
+  overwrite = TRUE
 )
 
 ## reclassify soil ph ----
@@ -159,7 +161,8 @@ writeRaster(
   x = ph_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_ph.tiff")
+    "sc1_add_ugs_ph.tiff"),
+  overwrite = TRUE
 )
 
 ## reclassify soil clay ----
@@ -167,7 +170,8 @@ writeRaster(
   x = clay_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_clay.tiff")
+    "sc1_add_ugs_clay.tiff"),
+  overwrite = TRUE
 )
 
 
@@ -176,7 +180,8 @@ writeRaster(
   x = slope_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_slope.tiff")
+    "sc1_add_ugs_slope.tiff"),
+  overwrite = TRUE
 )
 
 ## reclassify sand ----
@@ -184,7 +189,8 @@ writeRaster(
   x = sand_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_sand.tiff")
+    "sc1_add_ugs_sand.tiff"),
+  overwrite = TRUE
 )
 
 ## reclassify wind ----
@@ -192,7 +198,8 @@ writeRaster(
   x = wind_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_wind.tiff")
+    "sc1_add_ugs_wind.tiff"),
+  overwrite = TRUE
 )
 
 ## reclassify ndvi ----
@@ -201,5 +208,6 @@ writeRaster(
   x = ndvi_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_ndvi.tiff")
+    "sc1_add_ugs_ndvi.tiff"),
+  overwrite = TRUE
 )

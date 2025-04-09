@@ -16,44 +16,44 @@ ugs <- list_package_resources("9a284a84-b9ff-484b-9e30-82f22c1780b9") %>%
   get_resource()
 
 ## remote sensing variables (raster) ----
-lc_3m <- raster(here(
+lc <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "landcover_to_3m_res.tif")
+  "landcover_to_20m_converted.tif")
   )
 
-sw_3m <- raster(here(
+sw <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soilwater_to_3m_res.tif")
+  "soil_water_to_20m_converted.tif")
 )
 
-ph_3m <- raster(here(
+ph <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_pH_to_3m_res.tif")
+  "soil_pH_to_20m_converted.tif")
 )
 
-slope_3m <- raster(here(
+slope <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "slope_to_3m_res.tif")
+  "slope_to_20m_converted.tif")
 )
 
-clay_3m <- raster(here(
+clay <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_clay_to_3m_res.tif")
+  "soil_clay_to_20m_converted.tif")
 )
 
-sand_3m <- raster(here(
+sand <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "soil_sand_to_3m_res.tif")
+  "soil_sand_to_20m_converted.tif")
 )
 
-wind_3m <- raster(here(
+wind <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "wind_to_3m_res.tif")
+  "wind_to_20m_converted.tif")
 )
 
-ndvi_3m <- raster(here(
+ndvi <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "ndvi_to_2016-2024_3m_res.tif")
+  "ndvi_to_2016-2024_20m_converted.tif")
 )
 
 ## parking lots ----
@@ -66,17 +66,17 @@ pl <- read_sf(here(
 
 ## get consistent crs ----
 epsg_2617 <- CRS('+init=EPSG:26917')
-crs(lc_3m) <- epsg_2617
-crs(sw_3m) <- epsg_2617
-crs(ph_3m) <- epsg_2617
-crs(slope_3m) <- epsg_2617
-crs(clay_3m) <- epsg_2617
-crs(sand_3m) <- epsg_2617
-crs(wind_3m) <- epsg_2617
-crs(ndvi_3m) <- epsg_2617 
+crs(lc) <- epsg_2617
+crs(sw) <- epsg_2617
+crs(ph) <- epsg_2617
+crs(slope) <- epsg_2617
+crs(clay) <- epsg_2617
+crs(sand) <- epsg_2617
+crs(wind) <- epsg_2617
+crs(ndvi) <- epsg_2617 
 
 # assign crs to green space and parking lot dataset
-crs_lc <- st_crs(lc_3m)
+crs_lc <- st_crs(lc)
 ugs_transform <- st_transform(ugs, crs_lc)
 pl_transform <- st_transform(pl, crs_lc)
 
@@ -84,14 +84,14 @@ pl_transform <- st_transform(pl, crs_lc)
 
 # a bit slow: 10 minute run or so 
 # could try to clip the rasters using the UGS shapefiles to make it faster
-lc_bv <- exact_extract(lc_3m, ugs_transform, "majority")
-sw_bv <- exact_extract(sw_3m, ugs_transform, "majority")
-ph_bv <- exact_extract(ph_3m, ugs_transform, "majority")
-sl_bv <- exact_extract(slope_3m, ugs_transform, "majority")
-sc_bv <- exact_extract(clay_3m, ugs_transform, "majority")
-ss_bv <- exact_extract(sand_3m, ugs_transform, "majority")
-ws_bv <- exact_extract(wind_3m, ugs_transform, "majority")
-ndvi_bv <- exact_extract(ndvi_3m, ugs_transform, "majority")
+lc_bv <- exact_extract(lc, ugs_transform, "majority")
+sw_bv <- exact_extract(sw, ugs_transform, "majority")
+ph_bv <- exact_extract(ph, ugs_transform, "majority")
+sl_bv <- exact_extract(slope, ugs_transform, "majority")
+sc_bv <- exact_extract(clay, ugs_transform, "majority")
+ss_bv <- exact_extract(sand, ugs_transform, "majority")
+ws_bv <- exact_extract(wind, ugs_transform, "majority")
+ndvi_bv <- exact_extract(ndvi, ugs_transform, "majority")
 
 ## combine remote sensing variables  ----
 ugs_tidy <- ugs_transform %>% 
