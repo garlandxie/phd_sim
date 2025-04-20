@@ -16,9 +16,13 @@ pl <- read_sf(here(
   "pl_green_space_type.shp"))
 
 ## SDM rasters -----------------------------------------------------------------
-maxent_prob_rast <- terra::rast(here(
+sc1_hsm_map <- terra::rast(here(
   "syncrosim/ugs_simulations.ssim.data/Scenario-83/wisdm_OutputSpatial/maxent_prob_map.tif")
   )
+
+sc2_hsm_map <- terra::rast(here(
+  "syncrosim/ugs_simulations.ssim.data/Scenario-87/wisdm_OutputSpatial/maxent_prob_map.tif")
+)
 
 tgt_back <-  terra::rast(here(
   "data/intermediate_data/target_background/trgt_prob_raster.tiff")
@@ -28,7 +32,8 @@ tgt_back <-  terra::rast(here(
 # clean ------------------------------------------------------------------------
 
 ## resistance surface ----------------------------------------------------------
-resist_surf <- spatialEco::raster.invert(maxent_prob_rast)
+sc1_resist_surf <- spatialEco::raster.invert(sc1_hsm_map)
+sc2_resist_surf <- spatialEco::raster.invert(sc2_hsm_map)
 
 ## to ugs ----------------------------------------------------------------------
 ugs_utm17n <- st_transform(to_ugs, 26917)
@@ -70,7 +75,28 @@ new_ugs_sc <- ggplot() +
   geom_sf(data = pl, col = "red") +
   theme_bw()
 
+existing_ugs_sc <- ggplot() + 
+  geom_sf(data = ugs_utm17n) + 
+  theme_bw()
+
 # save to disk -----------------------------------------------------------------
+
+# tif files --------------------------------------------------------------------
+
+terra::writeRaster(
+  x = sc1_resist_surf, 
+  filename = here("data", "intermediate_data", "resist_surfaces",
+                  "sc1_resist_surf.tif"),
+  gdal=c("COMPRESS=DEFLATE", "TFW=YES")
+)
+
+terra::writeRaster(
+  x = sc2_resist_surf, 
+  filename = here("data", "intermediate_data", "resist_surfaces",
+                  "sc2_resist_surf.tif"),
+  gdal=c("COMPRESS=DEFLATE", "TFW=YES")
+)
+
 
 ggsave(
   plot = maxent_prob_map, 
@@ -111,6 +137,15 @@ ggsave(
 ggsave(
   plot = new_ugs_sc, 
   filename = here("output", "new_ugs_scenario.png"),
+  device = "png", 
+  units = "in", 
+  width = 8, 
+  height = 8
+)
+
+ggsave(
+  plot = existing_ugs_sc, 
+  filename = here("output", "existing_ugs_scenario.png"),
   device = "png", 
   units = "in", 
   width = 8, 
