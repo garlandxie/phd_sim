@@ -168,5 +168,6 @@ st_write(
   obj = pl_tidy, 
   dsn = here(
     "data", "intermediate_data", "parking lots", 
-    "pl_green_space_type.shp")
+    "pl_green_space_type.shp"),
+  append = TRUE
 )
