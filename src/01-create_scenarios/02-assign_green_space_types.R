@@ -18,7 +18,7 @@ ugs <- list_package_resources("9a284a84-b9ff-484b-9e30-82f22c1780b9") %>%
 ## remote sensing variables (raster) ----
 lc <- raster(here(
   "data", "input_data", "resist_surfaces",
-  "landcover_to_20m_converted.tif")
+  "landcover_to_categorical_20m_res.tif")
   )
 
 sw <- raster(here(
