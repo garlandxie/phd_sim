@@ -106,38 +106,30 @@ edd_occ_final <- edd_occ_clean %>%
   lon = Longitude
   )
 
-occ_final <- rbind(gbif_occ_final, edd_occ_final)
+occ_tidy_wgs84 <- rbind(gbif_occ_final, edd_occ_final)
 
-# sanity checks ----------------------------------------------------------------
+# convert lat longs to utm17n --------------------------------------------------
 
-# I have kept code below, mainly for transparency but 
-# other readers can easily reproduce the code (if need be)
-
-## coordinate conversion bias --------------------------------------------------
-out.ddmm <- to_occ_clean %>%
-    dplyr::filter(!is.na(decimalLatitude) & !is.na(decimalLongitude)) %>%
-    cd_ddmm(lon = "decimalLongitude", lat = "decimalLatitude", 
-        ds = "species", diff = 1, min_span = 0.1,
-        value = "dataset")
-
-## rasterized sampling bias ----------------------------------------------------
-out.round <- to_occ_clean %>%
-  dplyr::filter(!is.na(decimalLatitude) & !is.na(decimalLongitude)) %>%
-  cd_round(
-  lon = "decimalLongitude", 
-  lat = "decimalLatitude", 
-  ds = "species",
-  value = "dataset",
-  T1 = 7,
-  verbose = TRUE,
-  graphs = F
-  )
+occ_tidy_utm17n <- occ_tidy_wgs84 %>%
+  st_as_sf(coords = c("lon", "lat"), crs = st_crs(4326)) %>%
+  st_transform(crs = 26917) %>%
+  mutate(lat = st_coordinates(.)[,1],
+         lon = st_coordinates(.)[,2]
+  ) %>%
+  st_drop_geometry()
 
 # save to disk -----------------------------------------------------------------
 
 write.csv(
-  x = occ_final, 
+  x = occ_tidy_wgs84, 
   file = here(
     "data", "intermediate_data", "occurrence_records", 
-    "occ_tidy.csv")
+    "occ_tidy_wgs84.csv")
+)
+
+write.csv(
+  x = occ_tidy_utm17n, 
+  file = here(
+    "data", "intermediate_data", "occurrence_records", 
+    "occ_tidy_utm17n.csv")
 )
