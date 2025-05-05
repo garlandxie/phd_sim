@@ -15,7 +15,7 @@ pl <- read_sf(here(
 ## remote sensing variables (raster) ----
 lc <- raster(here(
   "data", "input_data", "resist_surfaces", 
-  "landcover_to_20m_converted.tif")
+  "landcover_to_categorical_20m_res.tif")
 )
 
 sw <- raster(here(
@@ -143,7 +143,7 @@ writeRaster(
   x = lc_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_lc.tiff"), 
+    "sc2_add_ugs_lc.tiff"), 
   overwrite = TRUE
 )
 
@@ -152,7 +152,7 @@ writeRaster(
   x = sw_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_sw.tiff"),
+    "sc2_add_ugs_sw.tiff"),
   overwrite = TRUE
 )
 
@@ -161,7 +161,7 @@ writeRaster(
   x = ph_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_ph.tiff"),
+    "sc2_add_ugs_ph.tiff"),
   overwrite = TRUE
 )
 
@@ -170,7 +170,7 @@ writeRaster(
   x = clay_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_clay.tiff"),
+    "sc2_add_ugs_clay.tiff"),
   overwrite = TRUE
 )
 
@@ -180,7 +180,7 @@ writeRaster(
   x = slope_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_slope.tiff"),
+    "sc2_add_ugs_slope.tiff"),
   overwrite = TRUE
 )
 
@@ -189,7 +189,7 @@ writeRaster(
   x = sand_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_sand.tiff"),
+    "sc2_add_ugs_sand.tiff"),
   overwrite = TRUE
 )
 
@@ -198,7 +198,7 @@ writeRaster(
   x = wind_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_wind.tiff"),
+    "sc2_add_ugs_wind.tiff"),
   overwrite = TRUE
 )
 
@@ -208,6 +208,6 @@ writeRaster(
   x = ndvi_spatrast2, 
   filename = here(
     "data", "intermediate_data", "ugs_scenarios",
-    "sc1_add_ugs_ndvi.tiff"),
+    "sc2_add_ugs_ndvi.tiff"),
   overwrite = TRUE
 )
