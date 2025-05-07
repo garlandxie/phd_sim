@@ -1,4 +1,24 @@
-# Credit: Toby Tsang wrote the code 
+################################################################################
+# Accompanying code for the paper: 
+#   Can urban green spaces support biological invasions? 
+#   A case study in Toronto, Canada
+#
+# Corresponding authors for this script:  
+#   Garland Xie      (1,2)
+#   Toby Tsang       (1)
+#
+# Affiliations: 
+#   (1) Department of Biological Sciences, 
+#       University of Toronto Scarborough,
+#       1265 Military Trail, Toronto, ON, M1C 1A4, Canada
+#       email: garland.xie@mail.utoronto.ca, 
+#              nicholas.sookhan@mail.utoronto.ca
+#              scott.macivor@mail.utoronto.ca
+#   (2) Department of Ecology and Evolutionary Biology,
+#       University of Colorado Boulder,
+#
+# Purpose of this R script: to build and project habitat suitability models 
+# that account for sampling bias using the target background approach
 
 ### prep the data
 
