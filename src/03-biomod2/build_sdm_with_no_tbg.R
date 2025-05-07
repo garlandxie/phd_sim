@@ -18,7 +18,7 @@
 #       University of Colorado Boulder,
 #
 # Purpose of this R script: to build and project habitat suitability models 
-# for current and future green space scenaros 
+# for currentgreen space scenaro 
 
 ### prep the data
 
