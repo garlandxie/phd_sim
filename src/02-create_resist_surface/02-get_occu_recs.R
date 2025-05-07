@@ -113,8 +113,8 @@ occ_tidy_wgs84 <- rbind(gbif_occ_final, edd_occ_final)
 occ_tidy_utm17n <- occ_tidy_wgs84 %>%
   st_as_sf(coords = c("lon", "lat"), crs = st_crs(4326)) %>%
   st_transform(crs = 26917) %>%
-  mutate(lat = st_coordinates(.)[,1],
-         lon = st_coordinates(.)[,2]
+  mutate(lon = st_coordinates(.)[,1],
+         lat = st_coordinates(.)[,2]
   ) %>%
   st_drop_geometry()
 
