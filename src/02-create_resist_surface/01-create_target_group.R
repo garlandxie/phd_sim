@@ -128,17 +128,11 @@ target_raster <- target_raster %>%
 # clip new raster to TO boundary
 target_raster2 <- raster::mask(target_raster, to_bound_utm)
 
-# inverse raster values so that some TA parks are downweighted
-# for habitat suitability values
-target_raster2 <- spatialEco::raster.invert(target_raster2)
-
-## ensure pixel resolution of 20m
-tbg_final <- terra::resample(target_raster2, soil_ph)
 
 # save to disk -----------------------------------------------------------------
 
 terra::writeRaster(
-  x = tbg_final,
+  x = target_raster2,
   filename = here(
     "trgt_prob_raster.tiff")
   )
