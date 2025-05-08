@@ -80,7 +80,6 @@ rast_sc1_df$presence <- ifelse(rast_sc1_df$cell %in% grid$cell,1,NA)
 
 tgb <- rast("C:/Users/Garland/Documents/R/phd_sim/data/intermediate_data/target_background/trgt_prob_raster.tiff")
 tgb <- mask(tgb,rast_sc1$ndvi)
-tgb <- 1-tgb #i think you inverted the scale...? 
 plot(tgb)
 tgb_df <- as.data.frame(tgb,xy=T,cells=T)
 rast_sc1_df$tgb <-tgb_df[match(paste0(rast_sc1_df$x,rast_sc1_df$y),paste0(tgb_df$x,tgb_df$y)),"layer"]
