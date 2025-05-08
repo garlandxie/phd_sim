@@ -22,26 +22,13 @@ sc2_resist_surf <- spatialEco::raster.invert(sc2_sdm)
 
 # visualize --------------------------------------------------------------------
 
+# double check to see if raster inversion worked
 (sc1_resist_surf_map <- ggplot() + 
-    tidyterra::geom_spatraster(data = sc1_resist_surf) + 
-    guides(fill = guide_legend(title = "Resistance Surface")) +
-    scale_fill_viridis_c(
-      option = "magma",
-      na.value = NA,
-      breaks = c(0, 20, 40, 60, 80, 100)
-    ) + 
-   theme_bw()
+    tidyterra::geom_spatraster(data = sc1_resist_surf) 
 )
 
 (sc2_resist_surf_map <- ggplot() + 
-    tidyterra::geom_spatraster(data = sc2_resist_surf) + 
-    guides(fill = guide_legend(title = "Resistance Surface")) +
-    scale_fill_viridis_c(
-      option = "magma",
-      na.value = NA,
-      breaks = c(0, 20, 40, 60, 80, 100)
-    ) + 
-    theme_bw()
+    tidyterra::geom_spatraster(data = sc2_resist_surf) 
 )
 
 # save to disk -----------------------------------------------------------------
