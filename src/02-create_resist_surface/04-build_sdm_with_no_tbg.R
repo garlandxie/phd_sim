@@ -11,9 +11,7 @@
 #   (1) Department of Biological Sciences, 
 #       University of Toronto Scarborough,
 #       1265 Military Trail, Toronto, ON, M1C 1A4, Canada
-#       email: garland.xie@mail.utoronto.ca, 
-#              nicholas.sookhan@mail.utoronto.ca
-#              scott.macivor@mail.utoronto.ca
+#       email: garlandxie@gmail.com
 #   (2) Department of Ecology and Evolutionary Biology,
 #       University of Colorado Boulder,
 #
