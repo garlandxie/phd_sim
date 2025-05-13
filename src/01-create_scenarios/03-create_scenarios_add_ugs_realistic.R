@@ -8,7 +8,7 @@ library(here)     # for creating relative file-paths
 
 ## parking lot polygons --------------------------------------------------------
 
-pl_realistic <- read_sf(here(
+pl <- read_sf(here(
   "data", "intermediate_data", "parking lots",
   "pl_realistic_ugs_type.shp"))
 
