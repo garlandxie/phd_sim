@@ -142,7 +142,7 @@ ndvi_spatrast2[!is.na(pl_ndvi[])] <- pl_ndvi[!is.na(pl_ndvi[])]
 writeRaster(
   x = lc_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_lc.tiff"), 
   overwrite = TRUE
 )
@@ -151,7 +151,7 @@ writeRaster(
 writeRaster(
   x = sw_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_sw.tiff"),
   overwrite = TRUE
 )
@@ -160,7 +160,7 @@ writeRaster(
 writeRaster(
   x = ph_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_ph.tiff"),
   overwrite = TRUE
 )
@@ -169,17 +169,16 @@ writeRaster(
 writeRaster(
   x = clay_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_clay.tiff"),
   overwrite = TRUE
 )
-
 
 ## reclassify slope ----
 writeRaster(
   x = slope_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_slope.tiff"),
   overwrite = TRUE
 )
@@ -188,7 +187,7 @@ writeRaster(
 writeRaster(
   x = sand_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_sand.tiff"),
   overwrite = TRUE
 )
@@ -197,7 +196,7 @@ writeRaster(
 writeRaster(
   x = wind_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_wind.tiff"),
   overwrite = TRUE
 )
@@ -207,7 +206,7 @@ writeRaster(
 writeRaster(
   x = ndvi_spatrast2, 
   filename = here(
-    "data", "intermediate_data", "ugs_scenarios",
+    "data", "intermediate_data", "ugs_scenarios", "sc2_realistic",
     "sc2_add_ugs_ndvi.tiff"),
   overwrite = TRUE
 )
