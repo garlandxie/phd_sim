@@ -1,55 +1,55 @@
-# libraries ----
+# libraries --------------------------------------------------------------------
 library(terra)    # for manipulating raster datasets
 library(raster)   # for manipulating raster datasets
 library(sf)       # for manipulating geospatial (vector) files
 library(here)     # for creating relative file-paths
 
-# import data ----
+# import data ------------------------------------------------------------------
 
-## parking lot polygons ----
+## parking lot polygons --------------------------------------------------------
 
-pl <- read_sf(here(
+pl_realistic <- read_sf(here(
   "data", "intermediate_data", "parking lots",
-  "pl_green_space_type.shp"))
+  "pl_realistic_ugs_type.shp"))
 
 ## remote sensing variables (raster) ----
 lc <- raster(here(
-  "data", "input_data", "resist_surfaces", 
+  "data", "input_data", "resist_surfaces", "converted",
   "landcover_to_categorical_20m_res.tif")
 )
 
 sw <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "soil_water_to_20m_converted.tif")
 )
 
 ph <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "soil_pH_to_20m_converted.tif")
 )
 
 slope <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "slope_to_20m_converted.tif")
 )
 
 clay <- raster(here(
-  "data", "input_data", "resist_surfaces",
-  "soil_clay_to_20m_res.tif")
+  "data", "input_data", "resist_surfaces", "converted",
+  "soil_clay_to_20m_converted.tif")
 )
 
 sand <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "soil_sand_to_20m_converted.tif")
 )
 
 wind <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "wind_to_20m_converted.tif")
 )
 
 ndvi <- raster(here(
-  "data", "input_data", "resist_surfaces",
+  "data", "input_data", "resist_surfaces", "converted",
   "ndvi_to_2016-2024_20m_converted.tif")
 )
 
