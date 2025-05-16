@@ -1,0 +1,17 @@
+Connectivity Category,Baseline_scenario,Comparing_scenario,Dispersal_distance (m),Source_raster,Area difference
+Impeded,Existing_UGS,Adding_UGS_Realistic,80.00,30%,-2.40
+Diffuse,Existing_UGS,Adding_UGS_Realistic,80.00,30%,2.20
+Intensified,Existing_UGS,Adding_UGS_Realistic,80.00,30%,0.20
+Channelized,Existing_UGS,Adding_UGS_Realistic,80.00,30%,0.00
+Impeded,Existing_UGS,Adding_UGS_Extreme,80.00,30%,-67.32
+Diffuse,Existing_UGS,Adding_UGS_Extreme,80.00,30%,61.84
+Intensified,Existing_UGS,Adding_UGS_Extreme,80.00,30%,5.00
+Channelized,Existing_UGS,Adding_UGS_Extreme,80.00,30%,0.48
+Impeded,Existing_UGS,Adding_UGS_Realistic,1000.00,30%,-1389.16
+Diffuse,Existing_UGS,Adding_UGS_Realistic,1000.00,30%,1802.36
+Intensified,Existing_UGS,Adding_UGS_Realistic,1000.00,30%,-387.84
+Channelized,Existing_UGS,Adding_UGS_Realistic,1000.00,30%,-25.36
+Impeded,Existing_UGS,Adding_UGS_Extreme,1000.00,30%,-197.16
+Diffuse,Existing_UGS,Adding_UGS_Extreme,1000.00,30%,133.48
+Intensified,Existing_UGS,Adding_UGS_Extreme,1000.00,30%,46.52
+Channelized,Existing_UGS,Adding_UGS_Extreme,1000.00,30%,17.16
