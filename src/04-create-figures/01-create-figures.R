@@ -5,6 +5,7 @@ library(tidyterra)
 library(ggplot2)
 library(sf)
 library(patchwork)
+library(ggspatial)
 
 # import -----------------------------------------------------------------------
 
@@ -81,17 +82,44 @@ impact_1km <- impact_summary %>%
 
 plot_ugs_existing <- ggplot() +
   geom_sf(data = ugs_existing) +
-  theme_bw()
+  annotate("text", x = 617000, y = 4854415, label = "Scenario 1", size = 7) +
+  theme_bw() + 
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank()
+    )
 
 plot_ugs_realistic <- ggplot() +
   geom_sf(data = ugs_existing) +
-  geom_sf(data = pl_realistic, col = "#FFC20A") + 
-  theme_bw()
+  geom_sf(data = pl_realistic, col = "#E66100") + 
+  annotate("text", x = 617000, y = 4854415, label = "Scenario 2", size = 7) +
+  theme_bw() + 
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank()
+  )
 
 plot_ugs_extreme <- ggplot() +
   geom_sf(data = ugs_existing) +
-  geom_sf(data = pl_extreme, col = "#0C7BDC") + 
-  theme_bw()
+  geom_sf(data = pl_extreme, col = "#5D3A9B") + 
+  annotate("text", x = 617000, y = 4854415, label = "Scenario 3", size = 7) +
+  theme_bw() + 
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank()
+  )
 
 plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
 
@@ -132,7 +160,7 @@ plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
      name = "UGS scenario comparisons (Baseline: Existing UGS)",
      labels = c("Adding UGS (within Parkland Area of Needs)",
                 "Adding UGS (maximum allocation)"),
-     values=c("#FFC20A", "#0C7BDC"),
+     values = c("#E66100", "#5D3A9B"),
    ) + 
    scale_y_continuous(limits = c(-70, 70), breaks = seq(-70, 70, by = 10)) + 
    labs(
@@ -153,7 +181,7 @@ plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
       name = "UGS scenario comparisons (Baseline: Existing UGS)",
       labels = c("Adding UGS (within Parkland Area of Needs)",
                  "Adding UGS (maximum allocation)"),
-      values=c("#FFC20A", "#0C7BDC"),
+      values = c("#E66100", "#5D3A9B"),
     ) + 
     scale_y_continuous(limits = c(-2000, 2000), breaks = seq(-2000, 2000, by = 500)) + 
     labs(
@@ -198,6 +226,6 @@ ggsave(
   filename = here("output", "ugs_scenarios.png"),
   device = "png", 
   units = "in", 
-  height = 5, 
+  height = 12,
   width = 9
 )
