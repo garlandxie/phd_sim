@@ -57,18 +57,31 @@ impact_summary <- read.csv(here(
 
 ## resistance surface ----------------------------------------------------------
 
+# calculate change in raster values
 change_resist_sc1_sc2 <- sc2_resist_surf - sc1_resist_surf 
-change_resist_sc1_sc2 <- ifel(change_resist_sc1_sc2 < 0, 1, 0)
-num_change_sc1_sc2 <- sum(values(change_resist_sc1_sc2), na.rm = TRUE)
-
 change_resist_sc1_sc3 <- sc3_resist_surf - sc1_resist_surf
-change_resist_sc1_sc3 <- ifel(change_resist_sc1_sc3 < 0, 1, 0)
-num_change_sc1_sc3 <- sum(values(change_resist_sc1_sc3), na.rm = TRUE)
+
+# calculate number of pixels with decreased resistance values
+change_resist_sc1_sc2_binary <- ifel(change_resist_sc1_sc2 < 0, 1, 0)
+num_change_sc1_sc2 <- sum(values(change_resist_sc1_sc2_binary), na.rm = TRUE)
+
+change_resist_sc1_sc3_binary <- ifel(change_resist_sc1_sc3 < 0, 1, 0)
+num_change_sc1_sc3 <- sum(values(change_resist_sc1_sc3_binary), na.rm = TRUE)
 
 num_change <- data.frame(
   scenario = c("Scenario 2", "Scenario 3"),
   num_pixels = c(num_change_sc1_sc2, num_change_sc1_sc3)
 ) 
+
+# clean change in raster values for data visualization
+# remove NA's and zeros here
+r_sc1_sc2 <- values(change_resist_sc1_sc2)
+r_sc1_sc2 <- r_sc1_sc2[!is.na(r_sc1_sc2)]
+r_sc1_sc2 <- r_sc1_sc2[r_sc1_sc2 != 0]
+
+r_sc1_sc3 <- values(change_resist_sc1_sc3)
+r_sc1_sc3 <- r_sc1_sc3[!is.na(r_sc1_sc3)]
+r_sc1_sc3 <- r_sc1_sc3[r_sc1_sc3 != 0]
 
 ## omniscape impact ------------------------------------------------------------
 impact_80m <- impact_summary %>%
@@ -184,6 +197,26 @@ plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
     ) + 
     theme_bw() 
 )
+
+set.seed(42)
+p1 <- hist(r_sc1_sc3,
+     main = NULL,
+     xlab = NULL,
+     ylab = "Frequency of pixels with a change in resistance values (relative to Scenario 1)",
+     breaks = "Freedman-Diaconis",
+     col = "#5D3A9B",
+     border = "#5D3A9B")
+
+p2 <- hist(r_sc1_sc2, 
+          main = NULL,
+           xlab = NULL,
+           ylab = "Frequency of pixels with a change in resistance values (relative to Scenario 1)",
+           breaks = "Freedman-Diaconis",
+           col = "#E66100",
+           border = "#E66100",
+           add = TRUE)
+
+abline(v = 0, col = "black", lty = 4)
 
 ## omniscape impact -------------------------------------------------
 
