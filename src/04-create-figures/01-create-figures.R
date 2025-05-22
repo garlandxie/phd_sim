@@ -168,88 +168,22 @@ plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
    )
 )
 
-(plot_resist_surf_sc2 <- ggplot() + 
-    tidyterra::geom_spatraster(data = sc2_resist_surf, aes(fill = DSV.tbg_EMwmeanByROC_mergedData_mergedRun_mergedAlgo)) +
-    scale_fill_gradientn(
-      colours = terrain.colors(10),
-      na.value = NA
+(plot_change_resist <- 
+    ggplot(
+      aes(x = scenario, y = num_pixels), 
+      data = num_change) + 
+    geom_col(aes(fill = scenario)) +
+    labs(
+      x = NULL,
+      y = "Number of pixels with decreased resistance \n relative to Scenario 1 (per thousands)"
     ) + 
-    tidyterra::geom_spatraster(data = change_resist_sc1_sc2, aes(color = change_resist_surf)) +
-    scale_color_gradient(
-      low = "black", high = "white"
+    scale_fill_manual(
+      name = "Green Space Addition Scenarios",
+      labels = c("Scenario 2: Adding UGS (within Parkland area of needs)", "Scenario 3: Adding UGS (Maximum allocation)"),
+      values = c("#E66100","#5D3A9B")  
     ) + 
-    annotate("text", x = 617000, y = 4854415, label = "Scenario 2", size = 7) +
-    theme_bw() + 
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title.y = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title.x = element_blank()
-    )
+    theme_bw() 
 )
-
-(plot_resist_surf_sc3 <- ggplot() + 
-    tidyterra::geom_spatraster(data = sc3_resist_surf) +
-    tidyterra::geom_spatraster(data = change_resist_sc1_sc3) + 
-    scale_fill_gradient(
-      low = "black", high = "white",
-      na.value = NA
-    ) + 
-    annotate("text", x = 617000, y = 4854415, label = "Scenario 3", size = 7) +
-    theme_bw() + 
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title.y = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title.x = element_blank()
-    )
-)
-
-(plot_change_resist_sc1_sc2 <- ggplot() + 
-  tidyterra::geom_spatraster(data = change_resist_sc1_sc2) +
-  geom_sf(data = to_boundary, fill = NA) + 
-  scale_fill_gradient2(
-    name = "Change in Resistance\n (relative to Scenario 1)",
-    low = "#005AB5", 
-    high = "#DC3220", 
-    na.value = NA) + 
-  annotate("text", x = 617000, y = 4854415, label = "Scenario 2", size = 7) +
-  theme_bw() + 
-  theme(
-     axis.text.y = element_blank(),
-     axis.ticks.y = element_blank(),
-     axis.title.y = element_blank(),
-     axis.text.x = element_blank(),
-     axis.ticks.x = element_blank(),
-     axis.title.x = element_blank()
-   )  
-)
-
-(plot_change_resist_sc1_sc3 <- ggplot() + 
-    tidyterra::geom_spatraster(data = change_resist_sc1_sc3) +
-    geom_sf(data = to_boundary, fill = NA) + 
-    scale_fill_gradient2(
-      name = "Change in Resistance\n (relative to Scenario 1)",
-      low = "#005AB5", 
-      high = "#DC3220", 
-      na.value = NA) + 
-    annotate("text", x = 617000, y = 4854415, label = "Scenario 3", size = 7) +
-    theme_bw() + 
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title.y = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title.x = element_blank()
-    ) 
-)
-
-plot_resist_surf <- plot_resist_surf_sc1 + plot_change_resist
 
 ## omniscape impact -------------------------------------------------
 
