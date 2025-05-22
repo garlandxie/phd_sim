@@ -6,6 +6,7 @@ library(ggplot2)
 library(sf)
 library(patchwork)
 library(ggspatial)
+library(ggsignif)
 
 # import -----------------------------------------------------------------------
 
@@ -26,6 +27,10 @@ pl_extreme <- read_sf(here(
   "pl_extreme_ugs_type.shp")
   )
 
+to_boundary <- read_sf(here(
+ "data/input_data/to_boundary/citygcs_regional_mun_wgs84.shp")
+ ) %>% st_transform(26917)
+
 ## resistance surface ----------------------------------------------------------
 sc1_resist_surf <- terra::rast(here(
   "data", "intermediate_data", "resist_surfaces",
@@ -37,6 +42,11 @@ sc2_resist_surf <- terra::rast(here(
   "sc2_resist_surf.tif")
 )
 
+sc3_resist_surf <- terra::rast(here(
+  "data", "intermediate_data", "resist_surfaces",
+  "sc3_resist_surf.tif")
+)
+
 ## omniscape impact ------------------------------------------------------------
 impact_summary <- read.csv(here(
   "data","intermediate_data", "omniscape_impact", 
@@ -44,6 +54,21 @@ impact_summary <- read.csv(here(
   )
 
 # clean ------------------------------------------------------------------------
+
+## resistance surface ----------------------------------------------------------
+
+change_resist_sc1_sc2 <- sc2_resist_surf - sc1_resist_surf 
+change_resist_sc1_sc2 <- ifel(change_resist_sc1_sc2 < 0, 1, 0)
+num_change_sc1_sc2 <- sum(values(change_resist_sc1_sc2), na.rm = TRUE)
+
+change_resist_sc1_sc3 <- sc3_resist_surf - sc1_resist_surf
+change_resist_sc1_sc3 <- ifel(change_resist_sc1_sc3 < 0, 1, 0)
+num_change_sc1_sc3 <- sum(values(change_resist_sc1_sc3), na.rm = TRUE)
+
+num_change <- data.frame(
+  scenario = c("Scenario 2", "Scenario 3"),
+  num_pixels = c(num_change_sc1_sc2, num_change_sc1_sc3)
+) 
 
 ## omniscape impact ------------------------------------------------------------
 impact_80m <- impact_summary %>%
@@ -124,29 +149,107 @@ plot_ugs_extreme <- ggplot() +
 plot_ugs <- plot_ugs_existing / plot_ugs_realistic / plot_ugs_extreme
 
 ## resistance surface ----------------------------------------------------------
-(plot_sc1 <- ggplot() + 
-  tidyterra::geom_spatraster(data = sc1_resist_surf) +
-   scale_fill_viridis_c(
-     option = "turbo",
-     na.value = NA,
-     breaks = c(0, 25, 50, 75, 100)
-   ) +
-   guides(fill = guide_legend(title = "Resistance Surface")) +
-   ggspatial::annotation_scale() +
-  theme_bw()
+(plot_resist_surf_sc1 <- ggplot() + 
+   tidyterra::geom_spatraster(data = sc1_resist_surf) +
+   scale_fill_gradientn(
+     name = "Resistance Values", 
+     colours = terrain.colors(10),     
+     na.value = NA
+     ) + 
+   annotate("text", x = 617000, y = 4854415, label = "Scenario 1", size = 7) +
+   theme_bw() + 
+   theme(
+     axis.text.y = element_blank(),
+     axis.ticks.y = element_blank(),
+     axis.title.y = element_blank(),
+     axis.text.x = element_blank(),
+     axis.ticks.x = element_blank(),
+     axis.title.x = element_blank()
+   )
 )
 
-(plot_sc2 <- ggplot() + 
-    tidyterra::geom_spatraster(data = sc1_resist_surf) +
-    scale_fill_viridis_c(
-      option = "turbo",
-      na.value = NA,
-      breaks = c(0, 25, 50, 75, 100)
-    ) +
-    guides(fill = guide_legend(title = "Resistance Surface")) +
-    ggspatial::annotation_scale() +
-    theme_bw()
+(plot_resist_surf_sc2 <- ggplot() + 
+    tidyterra::geom_spatraster(data = sc2_resist_surf, aes(fill = DSV.tbg_EMwmeanByROC_mergedData_mergedRun_mergedAlgo)) +
+    scale_fill_gradientn(
+      colours = terrain.colors(10),
+      na.value = NA
+    ) + 
+    tidyterra::geom_spatraster(data = change_resist_sc1_sc2, aes(color = change_resist_surf)) +
+    scale_color_gradient(
+      low = "black", high = "white"
+    ) + 
+    annotate("text", x = 617000, y = 4854415, label = "Scenario 2", size = 7) +
+    theme_bw() + 
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank()
+    )
 )
+
+(plot_resist_surf_sc3 <- ggplot() + 
+    tidyterra::geom_spatraster(data = sc3_resist_surf) +
+    tidyterra::geom_spatraster(data = change_resist_sc1_sc3) + 
+    scale_fill_gradient(
+      low = "black", high = "white",
+      na.value = NA
+    ) + 
+    annotate("text", x = 617000, y = 4854415, label = "Scenario 3", size = 7) +
+    theme_bw() + 
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank()
+    )
+)
+
+(plot_change_resist_sc1_sc2 <- ggplot() + 
+  tidyterra::geom_spatraster(data = change_resist_sc1_sc2) +
+  geom_sf(data = to_boundary, fill = NA) + 
+  scale_fill_gradient2(
+    name = "Change in Resistance\n (relative to Scenario 1)",
+    low = "#005AB5", 
+    high = "#DC3220", 
+    na.value = NA) + 
+  annotate("text", x = 617000, y = 4854415, label = "Scenario 2", size = 7) +
+  theme_bw() + 
+  theme(
+     axis.text.y = element_blank(),
+     axis.ticks.y = element_blank(),
+     axis.title.y = element_blank(),
+     axis.text.x = element_blank(),
+     axis.ticks.x = element_blank(),
+     axis.title.x = element_blank()
+   )  
+)
+
+(plot_change_resist_sc1_sc3 <- ggplot() + 
+    tidyterra::geom_spatraster(data = change_resist_sc1_sc3) +
+    geom_sf(data = to_boundary, fill = NA) + 
+    scale_fill_gradient2(
+      name = "Change in Resistance\n (relative to Scenario 1)",
+      low = "#005AB5", 
+      high = "#DC3220", 
+      na.value = NA) + 
+    annotate("text", x = 617000, y = 4854415, label = "Scenario 3", size = 7) +
+    theme_bw() + 
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.title.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank()
+    ) 
+)
+
+plot_resist_surf <- plot_resist_surf_sc1 + plot_change_resist
 
 ## omniscape impact -------------------------------------------------
 
@@ -229,3 +332,13 @@ ggsave(
   height = 12,
   width = 9
 )
+
+ggsave(
+  plot = plot_resist_surf_sc1,
+  filename = here("output", "resist_surf.png"),
+  device = "png", 
+  units = "in", 
+  height = 12,
+  width = 9
+)
+
