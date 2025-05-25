@@ -162,6 +162,16 @@ sc3 <- mask(sc3,rast_sc1$ndvi) #mask again
 plot(sc3)
 writeRaster(sc3,"DSV/Final/FutureEMSc3_final.tif",overwrite=T)
 
+# plot response curves ---------------------------------------------------------
+
+response_curves_EM <- bm_PlotResponseCurves(
+  DSVBiomodEM, models.chosen = "all", fixed.var = "mean", do.plot = FALSE)
+
+response_curve_df <- response_curves_EM$tab %>%
+  as.data.frame()
+
+write.csv(response_curve_df, here("data/intermediate_data/maxent_sdm/DSV/response_curves.csv"))
+
 ### Save RDS objects 
 
 # these models take a while to run so save RDS objects if I want to 
